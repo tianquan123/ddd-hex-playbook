@@ -1,0 +1,4 @@
+interface:
+  display_name: "DDD Modeling"
+  short_description: "通过真实业务场景、不变式与通用语言评审领域模型和上下文边界"
+  default_prompt: "Use $ddd-modeling to evaluate this domain model from concrete business scenarios and invariants."

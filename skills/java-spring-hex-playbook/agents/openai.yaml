@@ -1,0 +1,4 @@
+interface:
+  display_name: "Java Spring Hex Playbook"
+  short_description: "在现有项目约束下落地可验证的 Java/Spring 六边形架构边界"
+  default_prompt: "Use $java-spring-hex-playbook to place this Java/Spring responsibility in the correct boundary and explain the dependency impact."
