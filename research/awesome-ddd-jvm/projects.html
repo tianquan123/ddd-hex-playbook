@@ -1,17 +1,119 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="七个 JVM DDD 核心开源样例的源码分析">
-  <title>JVM 核心样例</title><link rel="stylesheet" href="assets/styles.css"><script src="assets/app.js" defer></script>
+  <title>JVM 核心样例</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <script src="assets/app.js" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#content">跳到正文</a>
-  <header class="site-header"><a class="brand" href="index.html">DDD / JVM FIELD NOTES</a><nav class="site-nav" aria-label="主导航"><a href="index.html">总览</a><a href="projects.html" aria-current="page">核心项目</a><a href="patterns.html">设计模式</a><a href="resources.html">资源索引</a><a href="skill-gaps.html">技能差距</a></nav></header>
+  <header class="site-header">
+    <a class="brand" href="index.html">DDD / JVM FIELD NOTES</a>
+    <nav class="site-nav" aria-label="主导航"><a href="index.html">总览</a><a href="projects.html" aria-current="page">核心项目</a><a href="patterns.html">设计模式</a><a href="resources.html">资源索引</a><a href="skill-gaps.html">技能差距</a></nav>
+  </header>
   <main id="content" class="page-shell">
-    <section class="hero"><div class="hero-index"><strong>01</strong><span class="eyebrow">Source studies</span></div><div class="hero-copy"><p class="eyebrow">Read the decisions, not the folders</p><h1>JVM 核心样例</h1><p class="lede">七个项目，六个观察维度：业务、边界、一致性、测试、局限与可迁移结论。</p></div></section>
-    <section class="section"><div class="section-heading"><span class="section-number">01.1 / 样例</span><div><h2>项目不是答案，是决策证据</h2><p>每个案例都会区分作者陈述、源码观察和本报告推断。</p></div></div></section>
+    <section class="hero">
+      <div class="hero-index"><strong>01</strong><span class="eyebrow">Source studies</span></div>
+      <div class="hero-copy"><p class="eyebrow">Read the decisions, not the folders</p><h1>JVM 核心样例</h1><p class="lede">七个项目，六个观察维度：业务、边界、一致性、测试、局限与可迁移结论。</p></div>
+    </section>
+    <section class="section">
+      <div class="section-heading"><span class="section-number">01.1 / 导航</span><div><h2>项目不是答案，是决策证据</h2><p>每个案例区分作者陈述、源码观察和本报告推断。年代标签描述“作为工程基线”的适用性，不否定设计思想。</p></div></div>
+      <div class="tag-list" aria-label="案例目录"><a class="tag" href="#library">图书馆</a><a class="tag" href="#dddsample">经典货运</a><a class="tag" href="#cargotracker">Jakarta 货运</a><a class="tag" href="#iddd-samples">IDDD 上下文</a><a class="tag" href="#java-cqrs-intro">CQRS 演进</a><a class="tag" href="#es-cqrs-examples">事件顺序</a><a class="tag" href="#project-manager">工作坊</a></div>
+    </section>
+
+    <article class="project-study section" id="library">
+      <div class="section-heading"><span class="section-number">01.2 / 主案例</span><div><p class="eyebrow">ddd-by-examples/library</p><h2>先发现业务，再允许不同上下文长成不同形状</h2><div class="tag-list"><span class="badge">必读</span><span class="badge">模块化单体</span><span class="badge">Event Storming</span><span class="badge badge-warn">2022</span></div></div></div>
+      <div class="grid-2">
+        <section class="panel"><h3>业务问题</h3><p>图书馆不是“书籍 CRUD”：普通读者最多同时保留五本，研究员可无限保留；受限图书只允许研究员借阅；逾期次数又会按分馆影响新的保留请求。规则带有身份、时间、地点与例外。</p><h3>模型与边界</h3><p>作者从 Big Picture Event Storming 到 Example Mapping，再到 Design Level Event Storming。由此识别 Catalogue 与 Lending：前者规则简单，采用 CRUD；后者有 Patron、Book、Daily Sheet 等模型并使用六边形架构。</p></section>
+        <section class="panel"><h3>一致性</h3><p>同一套行为断言分别运行在同步事件转发与 store-and-forward 异步投递下。项目没有宣称“最终一致性总是更好”，而是用可替换发布器与轮询断言保留演进空间。</p><h3>测试证据</h3><p>Spock 规格表达“最后一个允许的保留”等规则；集成测试覆盖强/最终一致性、重复保留和乐观锁；ArchUnit 将模块与六边形依赖方向变成可执行约束。</p></section>
+        <section class="panel"><h3>局限</h3><p>Vavr、状态类型、无 ORM、事件化仓储都属于项目选择，不应整体移植。代码活动停在 2022 年，依赖版本不适合作为新项目基线。</p><h3>可迁移结论</h3><p>最值得吸收的是“一个限界上下文一种合适的局部架构”、发现材料到测试的可追溯链，以及用架构测试守护边界；不是复制包结构。</p></section>
+        <section class="panel"><h3>代码证据</h3><details data-code><summary aria-expanded="false">查看精简的边界约束</summary><pre><code>noClasses().that()
+  .resideInAPackage("..model..")
+  .should().dependOnClassesThat()
+  .resideInAPackage("..infrastructure..");</code></pre></details><div class="source-links"><a target="_blank" rel="noreferrer" href="https://github.com/ddd-by-examples/library">仓库与说明</a><a target="_blank" rel="noreferrer" href="https://github.com/ddd-by-examples/library/blob/master/src/test/groovy/io/pillopl/library/lending/architecture/LendingHexagonalArchitectureTest.java">ArchUnit</a><a target="_blank" rel="noreferrer" href="https://github.com/ddd-by-examples/library/blob/master/src/integration-test/groovy/io/pillopl/library/lending/eventspropagation/EventualConsistencyBetweenAggregatesAndReadModelsIT.groovy">一致性测试</a></div></section>
+      </div>
+    </article>
+
+    <article class="project-study section" id="dddsample">
+      <div class="section-heading"><span class="section-number">01.3 / 经典基准</span><div><p class="eyebrow">citerus/dddsample-core</p><h2>模型语言比框架年代更耐久</h2><div class="tag-list"><span class="badge">必读</span><span class="badge">Cargo</span><span class="badge">场景测试</span><span class="badge badge-neutral">仍维护</span></div></div></div>
+      <div class="grid-2">
+        <section class="panel"><h3>业务问题</h3><p>货物需要订舱、指定路线、选择行程、登记装卸事件、识别误运并改道。TrackingId、RouteSpecification、Itinerary、Leg、Delivery、HandlingEvent、Voyage 和 UN/LOCODE 构成一致的货运语言。</p><h3>模型与边界</h3><p>Cargo 是聚合根；RouteSpecification 表示客户要求，Itinerary 表示执行计划，Delivery 是根据计划与实际装卸历史派生的状态。RoutingService 是领域所需能力的抽象，远程求解器留在基础设施。</p></section>
+        <section class="panel"><h3>一致性</h3><p>应用服务拥有事务。路线与行程位于 Cargo 聚合内，因此同步更新 Delivery；HandlingEvent 属于另一聚合，通过应用事件触发重新派生。</p><h3>测试证据</h3><p>从值对象、聚合、应用服务和 JPA 仓储，到文件/REST 集成与完整 CargoLifecycleScenarioTest，形成“规则—用例—适配器—场景”的证据链。</p></section>
+        <section class="panel"><h3>局限</h3><p>它是教学基准，不是现代 Spring 项目模板。包命名、JPA 映射和基础设施选择都可替换；不应因其经典地位固化所有对象边界。</p><h3>可迁移结论</h3><p>给当前模板增加一个真实端到端场景测试，比增加更多 sample DTO 更有价值；领域端口、事务边界和转换位置也可通过此项目校准。</p></section>
+        <section class="panel"><h3>代码证据</h3><details data-code><summary aria-expanded="false">查看聚合内同步更新</summary><pre><code>this.delivery = delivery.updateOnRouting(
+    routeSpecification, itinerary);</code></pre></details><div class="source-links"><a target="_blank" rel="noreferrer" href="https://github.com/citerus/dddsample-core">仓库</a><a target="_blank" rel="noreferrer" href="https://github.com/citerus/dddsample-core/blob/master/src/main/java/se/citerus/dddsample/domain/model/cargo/Cargo.java">Cargo</a><a target="_blank" rel="noreferrer" href="https://github.com/citerus/dddsample-core/blob/master/src/test/java/se/citerus/dddsample/scenario/CargoLifecycleScenarioTest.java">生命周期场景</a></div></section>
+      </div>
+    </article>
+
+    <article class="project-study section" id="cargotracker">
+      <div class="section-heading"><span class="section-number">01.4 / 对照实现</span><div><p class="eyebrow">eclipse-ee4j/cargotracker</p><h2>同一领域，换个平台后哪些东西不变</h2><div class="tag-list"><span class="badge">选读</span><span class="badge">Jakarta EE</span><span class="badge">端到端</span><span class="badge">活跃至 2025</span></div></div></div>
+      <div class="grid-2">
+        <section class="panel"><h3>业务问题</h3><p>沿用经典 Cargo 的订舱、路线、装卸和追踪流程，提供公众追踪、后台订舱和移动扫描等入口。</p><h3>模型与边界</h3><p>Cargo 聚合及其语言保持稳定，应用层和基础设施职责也与 DDDSample 对齐；变化主要在 Jakarta EE、JPA、JMS 与部署方式。</p></section>
+        <section class="panel"><h3>一致性</h3><p>Cargo 文档明确说明：RouteSpecification 与 Itinerary 在聚合内同步更新；HandlingEvent 在另一个聚合，Delivery 更新异步发生。</p><h3>测试证据</h3><p>CargoLifecycleScenarioTest 使用真实应用组件、以内存实现替代基础设施，另有领域、应用和路由适配器测试。</p></section>
+        <section class="panel"><h3>局限</h3><p>领域实体带 Jakarta Persistence/Validation 注解，这与当前技能要求的框架无关 Domain 冲突。它证明的是一种可行权衡，而非应改变现有不变量。</p><h3>可迁移结论</h3><p>将“平台注解是否允许进入领域”明确列为架构政策和可测试规则；同时保留面向场景的应用测试，使适配器替换不影响业务验证。</p></section>
+        <section class="panel"><h3>代码证据</h3><details data-code><summary aria-expanded="false">查看平台与领域耦合</summary><pre><code>@Entity
+public class Cargo {
+  @Embedded
+  private RouteSpecification routeSpecification;
+}</code></pre></details><div class="source-links"><a target="_blank" rel="noreferrer" href="https://github.com/eclipse-ee4j/cargotracker">仓库</a><a target="_blank" rel="noreferrer" href="https://github.com/eclipse-ee4j/cargotracker/blob/master/src/main/java/org/eclipse/cargotracker/domain/model/cargo/Cargo.java">Cargo</a><a target="_blank" rel="noreferrer" href="https://eclipse-ee4j.github.io/cargotracker/">项目文档</a></div></section>
+      </div>
+    </article>
+
+    <article class="project-study section" id="iddd-samples">
+      <div class="section-heading"><span class="section-number">01.5 / 多上下文</span><div><p class="eyebrow">VaughnVernon/IDDD_Samples</p><h2>上下文自治也意味着技术选择可以不同</h2><div class="tag-list"><span class="badge">概念参考</span><span class="badge">多个上下文</span><span class="badge">CQRS / ES</span><span class="badge badge-warn">Java 7</span></div></div></div>
+      <div class="grid-2">
+        <section class="panel"><h3>业务问题</h3><p>Identity &amp; Access、Collaboration 与 Agile Project Management 是三个独立业务语境，而非一个巨大“企业模型”。</p><h3>模型与边界</h3><p>顶层项目直接表达上下文边界。Collaboration 使用事件存储、端口/适配器和 MySQL 投影；Identity &amp; Access 使用 Hibernate，并通过 REST/RabbitMQ 发布通知。</p></section>
+        <section class="panel"><h3>一致性</h3><p>Collaboration 的事件溯源写模型和 CQRS 读模型使用不同存储，但示例在同一线程更新。README 主动承认仍有小的不一致窗口。</p><h3>测试证据</h3><p>各上下文包含领域与应用服务测试，也有投影和资源测试；不过作者明确警告部分测试不完整。</p></section>
+        <section class="panel"><h3>局限</h3><p>仓库声明不是生产质量，构建甚至要求 Java 7。公共组件也只是样例复用，不是推荐框架。</p><h3>可迁移结论</h3><p>当前建模技能需要从“找到上下文”继续走到“描述上下文关系”；模板应避免暗示所有上下文必须使用同一持久化或内部结构。</p></section>
+        <section class="panel"><h3>代码证据</h3><details data-code><summary aria-expanded="false">查看上下文结构</summary><pre><code>iddd_identityaccess/
+iddd_collaboration/
+iddd_agilepm/
+iddd_common/</code></pre></details><div class="source-links"><a target="_blank" rel="noreferrer" href="https://github.com/VaughnVernon/IDDD_Samples">仓库</a><a target="_blank" rel="noreferrer" href="https://github.com/VaughnVernon/IDDD_Samples/blob/master/README.md">适用性说明</a><a target="_blank" rel="noreferrer" href="https://github.com/VaughnVernon/IDDD_Samples/blob/master/iddd_collaboration/src/main/java/com/saasovation/collaboration/port/adapter/persistence/view/MySQLProjectionDispatcher.java">投影分发</a></div></section>
+      </div>
+    </article>
+
+    <article class="project-study section" id="java-cqrs-intro">
+      <div class="section-heading"><span class="section-number">01.6 / 演进路线</span><div><p class="eyebrow">asc-lab/java-cqrs-intro</p><h2>CQRS 是一条梯度，不是一个开关</h2><div class="tag-list"><span class="badge">必读</span><span class="badge">演进式设计</span><span class="badge">保险领域</span><span class="badge badge-warn">2020</span></div></div></div>
+      <div class="grid-2">
+        <section class="panel"><h3>业务问题</h3><p>保险保单创建、变更和终止既有复杂写规则，也有面向查询的保单信息与版本视图。</p><h3>模型与边界</h3><p>仓库并列展示无 CQRS、独立命令/查询、独立读写模型、独立存储和事件溯源。重点不是最终阶段，而是每一步解决的压力与新增成本。</p></section>
+        <section class="panel"><h3>一致性</h3><p>separatemodels 通过事件维护 PolicyInfo/PolicyVersion 投影；cqrswithes 从历史事件重建 Policy 聚合并把新事件保存至 EventStore。</p><h3>测试证据</h3><p>Spock 规格覆盖保单规则，投影与 Finder 测试展示读模型如何独立演进；同一业务在不同模块中的对照尤其适合架构评审。</p></section>
+        <section class="panel"><h3>局限</h3><p>部分阶段只以图示表达，代码和 Spring 版本陈旧。它没有提供生产级消息、重放运维或事件版本演进。</p><h3>可迁移结论</h3><p>把 CQRS 改写为决策树：先分方法，再分模型，只有在扩展、性能、组织或一致性证据充分时才分存储、引入事件溯源。</p></section>
+        <section class="panel"><h3>代码证据</h3><details data-code><summary aria-expanded="false">查看演进阶段</summary><pre><code>No CQRS
+→ Separate commands / queries
+→ Separate models
+→ Separate stores
+→ Event Sourcing</code></pre></details><div class="source-links"><a target="_blank" rel="noreferrer" href="https://github.com/asc-lab/java-cqrs-intro">仓库</a><a target="_blank" rel="noreferrer" href="https://github.com/asc-lab/java-cqrs-intro/tree/master/separatemodels">独立模型</a><a target="_blank" rel="noreferrer" href="https://github.com/asc-lab/java-cqrs-intro/tree/master/cqrswithes">事件溯源阶段</a></div></section>
+      </div>
+    </article>
+
+    <article class="project-study section" id="es-cqrs-examples">
+      <div class="section-heading"><span class="section-number">01.7 / 深水区</span><div><p class="eyebrow">andreschaffer/event-sourcing-cqrs-examples</p><h2>事件还要能够排序、重放和拒绝并发覆盖</h2><div class="tag-list"><span class="badge">专题必读</span><span class="badge">Event Sourcing</span><span class="badge">幂等 / 顺序</span><span class="badge">活跃至 2026</span></div></div></div>
+      <div class="grid-2">
+        <section class="panel"><h3>业务问题</h3><p>银行客户开设账户、存取款，同时查询交易历史与账户汇总。写模型规则与跨账户读视图天然不同。</p><h3>模型与边界</h3><p>写侧用端口与适配器保护聚合；读侧按功能组织。单聚合查询可回放其事件流，跨聚合查询进入投影，不污染写模型。</p></section>
+        <section class="panel"><h3>一致性</h3><p>事件携带显式版本：写侧用 baseVersion 做乐观并发检查；读侧用版本处理乱序。回放只赋值而不再执行“存款”业务逻辑，使重复回放结果稳定。</p><h3>测试证据</h3><p>测试覆盖聚合重建、新事件版本、陈旧 baseVersion、投影和规格对象，是候选中对事件正确性最直接的一组证据。</p></section>
+        <section class="panel"><h3>局限</h3><p>内存事件存储不代表生产能力；订阅检查点、重试/DLQ、快照、事件 schema 演进、投影重建和审计安全仍需单独设计。</p><h3>可迁移结论</h3><p>事件专题应补上 order、idempotency、projection recovery、event evolution 四问，避免“用了 Outbox”成为结束语。</p></section>
+        <section class="panel"><h3>代码证据</h3><details data-code><summary aria-expanded="false">查看乐观锁核心</summary><pre><code>if (baseVersion != currentVersion) {
+  throw new OptimisticLockingException();
+}</code></pre></details><div class="source-links"><a target="_blank" rel="noreferrer" href="https://github.com/andreschaffer/event-sourcing-cqrs-examples">仓库</a><a target="_blank" rel="noreferrer" href="https://github.com/andreschaffer/event-sourcing-cqrs-examples/blob/master/README.md">设计说明</a><a target="_blank" rel="noreferrer" href="https://github.com/andreschaffer/event-sourcing-cqrs-examples/blob/master/src/main/java/bankservice/port/outgoing/adapter/eventstore/InMemoryEventStore.java">事件存储</a></div></section>
+      </div>
+    </article>
+
+    <article class="project-study section" id="project-manager">
+      <div class="section-heading"><span class="section-number">01.8 / 教学结构</span><div><p class="eyebrow">mkopylec/project-manager</p><h2>让需求、模型与测试一起逐步长出来</h2><div class="tag-list"><span class="badge">工作坊</span><span class="badge">通用语言</span><span class="badge">分支演进</span><span class="badge badge-warn">2020</span></div></div></div>
+      <div class="grid-2">
+        <section class="panel"><h3>业务问题</h3><p>十个步骤从团队与成员，逐渐加入项目、功能、分配、启动、完成策略和外部报告。后续规则会挑战早期模型，接近真实建模的演化过程。</p><h3>模型与边界</h3><p>需求文本用实体、值对象和领域服务提示引导学习；start/finish 分支让每次决策可比较，另有 layered、hexagonal、unit-of-work 与 denormalized-model 分支。</p></section>
+        <section class="panel"><h3>一致性</h3><p>“项目结束条件”和“通知报告服务”迫使学习者区分聚合内规则、策略与外部副作用。它适合作为反例挑战，而非直接给出唯一答案。</p><h3>测试证据</h3><p>每一步都以现有测试通过为完成条件；分支差异承担模型演进记录的角色。</p></section>
+        <section class="panel"><h3>局限</h3><p>默认分支是脚手架，还混有另一个汽车分层示例；最终设计分散在非默认分支。只看 master 会误判项目内容。</p><h3>可迁移结论</h3><p>为建模技能增加“逐步场景 + 反例”输出；为项目模板设计一条可替换 SampleOrder 的练习路径，而不是把样例当最终模型。</p></section>
+        <section class="panel"><h3>代码证据</h3><details data-code><summary aria-expanded="false">查看工作坊节奏</summary><pre><code>step-1-start → step-1-finish
+...
+step-10-start → step-10-finish</code></pre></details><div class="source-links"><a target="_blank" rel="noreferrer" href="https://github.com/mkopylec/project-manager">仓库</a><a target="_blank" rel="noreferrer" href="https://github.com/mkopylec/project-manager/tree/hexagonal_architecture">六边形分支</a><a target="_blank" rel="noreferrer" href="https://allegro.tech/2019/12/grouping-and-organizing-classes.html">类组织文章</a></div></section>
+      </div>
+    </article>
   </main>
   <footer><span>返回 <a href="index.html">研究总览</a></span><span>资料核对日期：2026-07-14</span></footer>
 </body>
 </html>
+

@@ -108,6 +108,39 @@ class ReportContractTests(unittest.TestCase):
                 for reference in parser.stylesheets + parser.scripts:
                     self.assertTrue((ROOT / reference).exists(), reference)
 
+    def test_projects_cover_core_repositories_and_analysis_dimensions(self):
+        text = self.read_page("projects.html")
+        repositories = (
+            "ddd-by-examples/library",
+            "citerus/dddsample-core",
+            "eclipse-ee4j/cargotracker",
+            "VaughnVernon/IDDD_Samples",
+            "asc-lab/java-cqrs-intro",
+            "andreschaffer/event-sourcing-cqrs-examples",
+            "mkopylec/project-manager",
+        )
+        dimensions = ("业务问题", "模型与边界", "一致性", "测试证据", "局限", "可迁移结论")
+        for expected in repositories + dimensions:
+            with self.subTest(expected=expected):
+                self.assertIn(expected, text)
+
+    def test_patterns_cover_eight_themes_and_rule_levels(self):
+        text = self.read_page("patterns.html")
+        themes = (
+            "Event Storming",
+            "限界上下文",
+            "聚合与不变式",
+            "端口与适配器",
+            "CQRS",
+            "事件与一致性",
+            "持久化与查询",
+            "测试与架构守护",
+        )
+        levels = ("稳定原则", "团队默认值", "条件化方案", "示例")
+        for expected in themes + levels:
+            with self.subTest(expected=expected):
+                self.assertIn(expected, text)
+
 
 if __name__ == "__main__":
     unittest.main()
