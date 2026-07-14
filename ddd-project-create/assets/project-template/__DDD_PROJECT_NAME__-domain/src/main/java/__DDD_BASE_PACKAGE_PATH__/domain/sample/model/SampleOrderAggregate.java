@@ -21,13 +21,26 @@ public final class SampleOrderAggregate {
     }
 
     public static SampleOrderAggregate create(SampleOrderId id, String productCode, int quantity) {
+        validateDetails(productCode, quantity);
+        return new SampleOrderAggregate(id, productCode, quantity, SampleOrderStatus.CREATED);
+    }
+
+    public static SampleOrderAggregate rehydrate(
+            SampleOrderId id,
+            String productCode,
+            int quantity,
+            SampleOrderStatus status) {
+        validateDetails(productCode, quantity);
+        return new SampleOrderAggregate(id, productCode, quantity, status);
+    }
+
+    private static void validateDetails(String productCode, int quantity) {
         if (productCode == null || productCode.isBlank()) {
             throw new IllegalArgumentException("product code must not be blank");
         }
         if (quantity <= 0) {
             throw new IllegalArgumentException("quantity must be positive");
         }
-        return new SampleOrderAggregate(id, productCode, quantity, SampleOrderStatus.CREATED);
     }
 
     public SampleOrderId id() {

@@ -1,4 +1,12 @@
 package __DDD_BASE_PACKAGE__.facade.sample;
 
-public record CreateSampleOrderResponse(String id, String status) {
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
+public class CreateSampleOrderResponse {
+
+    private final String id;
+    private final String status;
 }

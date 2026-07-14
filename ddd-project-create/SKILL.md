@@ -55,6 +55,10 @@ On failure, include the exit code, concise cause, and log path when present. Do 
 
 Read [references/template-contract.md](references/template-contract.md) when changing the bundled template, manifest, generator, or validator. Template changes must retain the six-module dependency direction and pass both Python contract tests and a clean Maven wrapper build.
 
+Generated Java source must use Lombok-backed classes instead of Java Record declarations. HTTP request DTOs must carry Bean Validation constraints and be validated at the Trigger boundary.
+
+Keep the bundled sample slice's technology choices intact: convert HTTP requests to application commands with static MapStruct, and persist sample orders to MySQL through MyBatis XML. Datasource values in the generated Starter YAML are deliberate `xxxxx` placeholders; replace them with real connection details before starting the application.
+
 ## Common mistakes
 
 - Do not ask again for values already supplied by the user.

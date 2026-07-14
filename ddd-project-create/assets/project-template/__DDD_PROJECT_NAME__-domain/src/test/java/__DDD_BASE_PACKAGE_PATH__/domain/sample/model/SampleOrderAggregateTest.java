@@ -18,6 +18,17 @@ class SampleOrderAggregateTest {
     }
 
     @Test
+    void rehydrates_persisted_order() {
+        SampleOrderAggregate order = SampleOrderAggregate.rehydrate(
+                new SampleOrderId("order-1"), "SKU-1", 2, SampleOrderStatus.CREATED);
+
+        assertEquals("order-1", order.id().getValue());
+        assertEquals("SKU-1", order.productCode());
+        assertEquals(2, order.quantity());
+        assertEquals(SampleOrderStatus.CREATED, order.status());
+    }
+
+    @Test
     void rejects_blank_product_code() {
         assertThrows(IllegalArgumentException.class,
                 () -> SampleOrderAggregate.create(new SampleOrderId("order-1"), " ", 2));

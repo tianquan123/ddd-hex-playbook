@@ -15,6 +15,10 @@ The generated Maven reactor contains exactly these modules in dependency order:
 
 `domain` must not depend on Spring or another project module. `application` depends only on `domain`. Adapters implement or invoke inward-facing contracts, while `starter` is the composition root.
 
+Generated Java source must not declare Java Record. Use Lombok-backed classes for DTOs, commands, and value objects; preserve domain invariants in explicit constructors when generated Lombok constructors are insufficient.
+
+The sample HTTP boundary must use static MapStruct to convert request DTOs into application commands. The sample Infra adapter must persist through a MyBatis mapper interface and XML SQL, never an in-memory map. Keep datasource and MyBatis settings in Starter YAML; its `xxxxx` connection values are intentional placeholders and must not be treated as working credentials.
+
 ## Placeholders
 
 The manifest is the source of truth for every supported placeholder. A placeholder must have one semantic purpose and must be replaced in both paths and eligible text files.

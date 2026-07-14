@@ -1,6 +1,6 @@
 package __DDD_BASE_PACKAGE__.trigger.http;
 
-import __DDD_BASE_PACKAGE__.application.sample.CreateSampleOrderCommand;
+import jakarta.validation.Valid;
 import __DDD_BASE_PACKAGE__.application.sample.SampleOrderAppService;
 import __DDD_BASE_PACKAGE__.domain.sample.model.SampleOrderAggregate;
 import __DDD_BASE_PACKAGE__.facade.sample.CreateSampleOrderRequest;
@@ -24,9 +24,9 @@ public class SampleOrderController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    CreateSampleOrderResponse create(@RequestBody CreateSampleOrderRequest request) {
+    CreateSampleOrderResponse create(@Valid @RequestBody CreateSampleOrderRequest request) {
         SampleOrderAggregate order = appService.create(
-                new CreateSampleOrderCommand(request.productCode(), request.quantity()));
-        return new CreateSampleOrderResponse(order.id().value(), order.status().name());
+                SampleOrderHttpMapper.INSTANCE.toCommand(request));
+        return new CreateSampleOrderResponse(order.id().getValue(), order.status().name());
     }
 }

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 import subprocess
 import sys
 import tempfile
@@ -101,6 +102,36 @@ class InputValidationTests(unittest.TestCase):
 
 
 class ManifestValidationTests(unittest.TestCase):
+    def test_real_template_uses_mapstruct_and_mybatis_xml(self) -> None:
+        template = SKILL_ROOT / "assets" / "project-template"
+        controller = (template / "__DDD_PROJECT_NAME__-trigger" / "src" / "main" / "java"
+                      / "__DDD_BASE_PACKAGE_PATH__" / "trigger" / "http"
+                      / "SampleOrderController.java").read_text(encoding="utf-8")
+        http_mapper = (template / "__DDD_PROJECT_NAME__-trigger" / "src" / "main" / "java"
+                       / "__DDD_BASE_PACKAGE_PATH__" / "trigger" / "http"
+                       / "SampleOrderHttpMapper.java").read_text(encoding="utf-8")
+        mapper_xml = (template / "__DDD_PROJECT_NAME__-infra" / "src" / "main" / "resources"
+                      / "mapper" / "SampleOrderMapper.xml").read_text(encoding="utf-8")
+        yaml = (template / "__DDD_PROJECT_NAME__-starter" / "src" / "main" / "resources"
+                / "application.yml").read_text(encoding="utf-8")
+
+        self.assertIn("SampleOrderHttpMapper.INSTANCE.toCommand(request)", controller)
+        self.assertIn("Mappers.getMapper(SampleOrderHttpMapper.class)", http_mapper)
+        self.assertIn('<insert id="upsert"', mapper_xml)
+        self.assertIn("jdbc:mysql://xxxxx:3306/xxxxx", yaml)
+        self.assertEqual([], list(template.rglob("InMemorySampleOrderRepository.java")))
+
+    def test_template_java_sources_do_not_declare_records(self) -> None:
+        template = SKILL_ROOT / "assets" / "project-template"
+        declaration = re.compile(r"\brecord\s+[A-Za-z_$][A-Za-z0-9_$]*\s*\(")
+        matches = [
+            str(path.relative_to(template))
+            for path in template.rglob("*.java")
+            if declaration.search(path.read_text(encoding="utf-8"))
+        ]
+
+        self.assertEqual([], matches)
+
     def test_windows_wrapper_guards_null_symlink_target(self) -> None:
         wrapper = (SKILL_ROOT / "assets" / "project-template" / "mvnw.cmd").read_text(encoding="utf-8")
 
@@ -289,6 +320,11 @@ class SkillContractTests(unittest.TestCase):
         self.assertIn("explicit confirmation", self.text)
         self.assertIn("non-empty", self.text)
         self.assertNotIn("--force", self.text)
+
+    def test_documents_sample_mapping_and_persistence_choices(self) -> None:
+        self.assertIn("static MapStruct", self.text)
+        self.assertIn("MyBatis XML", self.text)
+        self.assertIn("`xxxxx`", self.text)
 
     def test_invokes_generator_and_explains_exit_codes(self) -> None:
         self.assertIn("python scripts/create_project.py", self.text)

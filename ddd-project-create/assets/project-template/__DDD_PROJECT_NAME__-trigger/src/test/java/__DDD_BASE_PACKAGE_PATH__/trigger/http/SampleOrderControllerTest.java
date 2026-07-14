@@ -12,6 +12,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -38,5 +39,25 @@ class SampleOrderControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value("order-1"))
                 .andExpect(jsonPath("$.status").value("CREATED"));
+    }
+
+    @Test
+    void rejects_blank_product_code() throws Exception {
+        mockMvc.perform(post("/sample/orders")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"productCode\":\" \",\"quantity\":2}"))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(appService);
+    }
+
+    @Test
+    void rejects_non_positive_quantity() throws Exception {
+        mockMvc.perform(post("/sample/orders")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"productCode\":\"SKU-1\",\"quantity\":0}"))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(appService);
     }
 }

@@ -1,4 +1,12 @@
 package __DDD_BASE_PACKAGE__.application.sample;
 
-public record CreateSampleOrderCommand(String productCode, int quantity) {
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
+public class CreateSampleOrderCommand {
+
+    private final String productCode;
+    private final int quantity;
 }

@@ -20,7 +20,7 @@ class SampleOrderAppServiceTest {
         SampleOrderAggregate created = service.create(new CreateSampleOrderCommand("SKU-1", 3));
 
         assertSame(created, repository.saved);
-        assertEquals("order-1", created.id().value());
+        assertEquals("order-1", created.id().getValue());
         assertEquals(3, created.quantity());
     }
 

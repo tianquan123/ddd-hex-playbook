@@ -25,7 +25,7 @@ public final class SampleOrderAppService {
     public SampleOrderAggregate create(CreateSampleOrderCommand command) {
         Objects.requireNonNull(command, "command");
         SampleOrderAggregate order = SampleOrderAggregate.create(
-                new SampleOrderId(idSupplier.get()), command.productCode(), command.quantity());
+                new SampleOrderId(idSupplier.get()), command.getProductCode(), command.getQuantity());
         repository.save(order);
         return order;
     }

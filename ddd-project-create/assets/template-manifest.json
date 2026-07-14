@@ -31,6 +31,11 @@
     "__DDD_PROJECT_NAME__-infra/pom.xml",
     "__DDD_PROJECT_NAME__-trigger/pom.xml",
     "__DDD_PROJECT_NAME__-starter/pom.xml",
+    "__DDD_PROJECT_NAME__-trigger/src/main/java/__DDD_BASE_PACKAGE_PATH__/trigger/http/SampleOrderHttpMapper.java",
+    "__DDD_PROJECT_NAME__-infra/src/main/java/__DDD_BASE_PACKAGE_PATH__/infra/sample/adapter/SampleOrderRepository.java",
+    "__DDD_PROJECT_NAME__-infra/src/main/java/__DDD_BASE_PACKAGE_PATH__/infra/sample/persistence/SampleOrderMapper.java",
+    "__DDD_PROJECT_NAME__-infra/src/main/resources/mapper/SampleOrderMapper.xml",
+    "__DDD_PROJECT_NAME__-starter/src/main/resources/application.yml",
     "__DDD_PROJECT_NAME__-starter/src/main/java/__DDD_BASE_PACKAGE_PATH__/__DDD_PROJECT_CLASS__Application.java"
   ],
   "forbidden_tokens": [
@@ -44,6 +49,15 @@
     "__DDD_PROJECT_NAME__-starter/src/main/java/__DDD_BASE_PACKAGE_PATH__/__DDD_PROJECT_CLASS__Application.java": [
       "package __DDD_BASE_PACKAGE__;",
       "public class __DDD_PROJECT_CLASS__Application"
+    ],
+    "__DDD_PROJECT_NAME__-trigger/src/main/java/__DDD_BASE_PACKAGE_PATH__/trigger/http/SampleOrderHttpMapper.java": [
+      "Mappers.getMapper(SampleOrderHttpMapper.class)"
+    ],
+    "__DDD_PROJECT_NAME__-infra/src/main/resources/mapper/SampleOrderMapper.xml": [
+      "namespace=\"__DDD_BASE_PACKAGE__.infra.sample.persistence.SampleOrderMapper\""
+    ],
+    "__DDD_PROJECT_NAME__-starter/src/main/resources/application.yml": [
+      "jdbc:mysql://xxxxx:3306/xxxxx"
     ]
   },
   "build_commands": {

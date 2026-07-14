@@ -11,6 +11,11 @@
     <artifactId>__DDD_PROJECT_NAME__-application</artifactId>
     <dependencies>
         <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
             <groupId>__DDD_GROUP_ID__</groupId>
             <artifactId>__DDD_PROJECT_NAME__-domain</artifactId>
             <version>${project.version}</version>
