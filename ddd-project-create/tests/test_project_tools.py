@@ -101,6 +101,12 @@ class InputValidationTests(unittest.TestCase):
 
 
 class ManifestValidationTests(unittest.TestCase):
+    def test_windows_wrapper_guards_null_symlink_target(self) -> None:
+        wrapper = (SKILL_ROOT / "assets" / "project-template" / "mvnw.cmd").read_text(encoding="utf-8")
+
+        self.assertNotIn("(Get-Item $MAVEN_M2_PATH).Target[0]", wrapper)
+        self.assertIn("$m2Item.Target[0] -ne $null", wrapper)
+
     def test_real_template_contains_every_required_path(self) -> None:
         manifest = load_manifest(SKILL_ROOT / "assets" / "template-manifest.json")
         template = SKILL_ROOT / "assets" / "project-template"
@@ -163,6 +169,33 @@ class ProjectCreationTests(unittest.TestCase):
             )
             self.assertNotIn("__DDD_", (project / "pom.xml").read_text(encoding="utf-8"))
             self.assertFalse((project / ".ddd-project-create.log").exists())
+
+    def test_replaces_package_path_placeholder_with_nested_directories(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            template, manifest_path = write_fixture(root)
+            package_dir = template / "__DDD_PROJECT_NAME__-domain" / "src" / "__DDD_BASE_PACKAGE_PATH__"
+            package_dir.mkdir(parents=True)
+            (package_dir / "Sample.java").write_text(
+                "package __DDD_BASE_PACKAGE__;",
+                encoding="utf-8",
+            )
+            manifest = minimal_manifest()
+            manifest["required_paths"].append(
+                "__DDD_PROJECT_NAME__-domain/src/__DDD_BASE_PACKAGE_PATH__/Sample.java"
+            )
+            manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+            config = self.config(root, template, manifest_path)
+            config.parent_dir.mkdir()
+
+            try:
+                project = create_project(config, successful_runner)
+            except ValueError as exc:
+                self.fail(f"package path placeholder was treated as a filename: {exc}")
+
+            self.assertTrue(
+                (project / "order-service-domain" / "src" / "com" / "example" / "platform" / "Sample.java").is_file()
+            )
 
     def test_defaults_base_package_to_group_id(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

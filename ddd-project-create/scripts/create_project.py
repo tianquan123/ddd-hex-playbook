@@ -118,7 +118,9 @@ def _rename_paths(target: Path, replacements: dict[str, str]) -> None:
     for path in paths:
         new_name = substitute(path.name, replacements)
         if new_name != path.name:
-            path.rename(path.with_name(new_name))
+            destination = path.parent.joinpath(*new_name.split("/"))
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            path.rename(destination)
 
 
 def _replace_text(target: Path, manifest: dict[str, Any], replacements: dict[str, str]) -> None:
