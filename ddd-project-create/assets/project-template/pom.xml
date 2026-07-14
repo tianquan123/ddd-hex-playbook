@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.3.5</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>__DDD_GROUP_ID__</groupId>
+    <artifactId>__DDD_PROJECT_NAME__</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <properties>
+        <java.version>21</java.version>
+        <maven.compiler.release>21</maven.compiler.release>
+        <maven-enforcer-plugin.version>3.5.0</maven-enforcer-plugin.version>
+    </properties>
+
+    <modules>
+        <module>__DDD_PROJECT_NAME__-api</module>
+        <module>__DDD_PROJECT_NAME__-domain</module>
+        <module>__DDD_PROJECT_NAME__-application</module>
+        <module>__DDD_PROJECT_NAME__-infra</module>
+        <module>__DDD_PROJECT_NAME__-trigger</module>
+        <module>__DDD_PROJECT_NAME__-starter</module>
+    </modules>
+</project>

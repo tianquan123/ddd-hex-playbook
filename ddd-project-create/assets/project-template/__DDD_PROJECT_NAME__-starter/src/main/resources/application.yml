@@ -1,0 +1,3 @@
+spring:
+  application:
+    name: __DDD_PROJECT_NAME__

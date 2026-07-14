@@ -1,0 +1,4 @@
+interface:
+  display_name: "DDD Project Create"
+  short_description: "Create the team-standard six-module DDD project"
+  default_prompt: "Use $ddd-project-create to create a new team-standard Java/Spring DDD project."

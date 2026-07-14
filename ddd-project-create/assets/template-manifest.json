@@ -1,0 +1,59 @@
+{
+  "template_version": "1.0.0",
+  "placeholders": [
+    "__DDD_PROJECT_NAME__",
+    "__DDD_GROUP_ID__",
+    "__DDD_BASE_PACKAGE__",
+    "__DDD_BASE_PACKAGE_PATH__",
+    "__DDD_PROJECT_CLASS__"
+  ],
+  "text_extensions": [
+    ".cmd",
+    ".java",
+    ".md",
+    ".properties",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "text_filenames": [
+    ".gitignore",
+    "mvnw"
+  ],
+  "required_paths": [
+    "pom.xml",
+    "mvnw",
+    "mvnw.cmd",
+    ".mvn/wrapper/maven-wrapper.properties",
+    "__DDD_PROJECT_NAME__-api/pom.xml",
+    "__DDD_PROJECT_NAME__-domain/pom.xml",
+    "__DDD_PROJECT_NAME__-application/pom.xml",
+    "__DDD_PROJECT_NAME__-infra/pom.xml",
+    "__DDD_PROJECT_NAME__-trigger/pom.xml",
+    "__DDD_PROJECT_NAME__-starter/pom.xml",
+    "__DDD_PROJECT_NAME__-starter/src/main/java/__DDD_BASE_PACKAGE_PATH__/__DDD_PROJECT_CLASS__Application.java"
+  ],
+  "forbidden_tokens": [
+    "__DDD_"
+  ],
+  "required_content": {
+    "pom.xml": [
+      "<groupId>__DDD_GROUP_ID__</groupId>",
+      "<artifactId>__DDD_PROJECT_NAME__</artifactId>"
+    ],
+    "__DDD_PROJECT_NAME__-starter/src/main/java/__DDD_BASE_PACKAGE_PATH__/__DDD_PROJECT_CLASS__Application.java": [
+      "package __DDD_BASE_PACKAGE__;",
+      "public class __DDD_PROJECT_CLASS__Application"
+    ]
+  },
+  "build_commands": {
+    "windows": [
+      "mvnw.cmd",
+      "verify"
+    ],
+    "posix": [
+      "./mvnw",
+      "verify"
+    ]
+  }
+}
