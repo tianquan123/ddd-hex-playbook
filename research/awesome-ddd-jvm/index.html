@@ -6,22 +6,79 @@
   <meta name="description" content="JVM 领域驱动设计开源项目调研与技能优化地图">
   <title>JVM DDD 实践地图</title>
   <link rel="stylesheet" href="assets/styles.css">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <script src="assets/app.js" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#content">跳到正文</a>
   <header class="site-header">
     <a class="brand" href="index.html">DDD / JVM FIELD NOTES</a>
-    <nav class="site-nav" aria-label="主导航">
-      <a href="index.html" aria-current="page">总览</a><a href="projects.html">核心项目</a><a href="patterns.html">设计模式</a><a href="resources.html">资源索引</a><a href="skill-gaps.html">技能差距</a>
-    </nav>
+    <nav class="site-nav" aria-label="主导航"><a href="index.html" aria-current="page">总览</a><a href="projects.html">核心项目</a><a href="patterns.html">设计模式</a><a href="resources.html">资源索引</a><a href="skill-gaps.html">技能差距</a></nav>
   </header>
   <main id="content" class="page-shell">
     <section class="hero">
       <div class="hero-index"><strong>00</strong><span class="eyebrow">Research atlas / 2026</span></div>
-      <div class="hero-copy"><p class="eyebrow">Awesome DDD · JVM research</p><h1>JVM DDD 实践地图</h1><p class="lede">从业务发现到可执行架构守护：一份面向当前技能项目的源码调研。</p><div class="meta-line"><span>7 个核心样例</span><span>5 类社区资料</span><span>核对日期 2026-07-14</span></div></div>
+      <div class="hero-copy"><p class="eyebrow">Awesome DDD · JVM research</p><h1>JVM DDD 实践地图</h1><p class="lede">从业务发现到可执行架构守护：一份面向当前技能项目的源码调研。</p><div class="meta-line"><span>7 个核心样例</span><span>20+ 原始链接</span><span>核对日期 2026-07-14</span></div></div>
     </section>
-    <section class="section"><div class="section-heading"><span class="section-number">00.1 / 导读</span><div><h2>先读结论，再下钻证据</h2><p>主报告将项目、模式、资源与技能差距拆为独立页面，避免单页过载。</p></div></div></section>
+
+    <section class="section">
+      <div class="section-heading"><span class="section-number">00.1 / 核心判断</span><div><h2>三句话先带走</h2><p>这份调研最重要的不是新增几个模式名，而是调整技能从“给答案”到“保留证据、延迟复杂度、执行边界”的方式。</p></div></div>
+      <div class="grid-3">
+        <article class="panel panel-accent"><p class="eyebrow">01 / Discovery</p><h3>先发现，再建模</h3><p>参与者、命令、事件、策略、热点和反例先于聚合。没有业务证据时，目录和数据库表都不能替代模型。</p><a href="patterns.html#discovery">查看发现链路</a></article>
+        <article class="panel panel-accent"><p class="eyebrow">02 / Boundaries</p><h3>让边界可执行</h3><p>端口所有权、框架隔离、模块依赖与关键场景要能被测试失败，而不只写在 README。</p><a href="patterns.html#testing">查看架构守护</a></article>
+        <article class="panel panel-accent"><p class="eyebrow">03 / Complexity</p><h3>复杂度按需引入</h3><p>CRUD、富领域模型、CQRS、异步投影和事件溯源是条件化选择，不是成熟度阶梯。</p><a href="patterns.html#cqrs">查看 CQRS 梯度</a></article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-heading"><span class="section-number">00.2 / 知识流</span><div><h2>从墙上的事件到运行中的守护栏</h2><p>任何一步断开，下一步都容易退化为技术偏好。</p></div></div>
+      <div class="grid-3">
+        <div class="panel"><span class="section-number">01</span><h3>业务发现</h3><p>场景、角色、命令、事件、策略、热点</p></div>
+        <div class="panel"><span class="section-number">02</span><h3>模型边界</h3><p>通用语言、上下文、聚合、不变式</p></div>
+        <div class="panel"><span class="section-number">03</span><h3>用例编排</h3><p>应用服务、事务、授权、失败语义</p></div>
+        <div class="panel"><span class="section-number">04</span><h3>端口适配</h3><p>消费者所有权、协议转换、技术失败</p></div>
+        <div class="panel"><span class="section-number">05</span><h3>一致性</h3><p>同步/异步、顺序、幂等、恢复</p></div>
+        <div class="panel"><span class="section-number">06</span><h3>可执行守护</h3><p>规则测试、场景测试、ArchUnit、契约</p></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-heading"><span class="section-number">00.3 / 八条结论</span><div><h2>跨项目重复出现的信号</h2><p>每条都能在至少两个案例或一个案例加权威社区资料中找到证据。</p></div></div>
+      <div class="grid-2">
+        <article class="panel"><h3>上下文边界不等于部署边界</h3><p>Library 先以包形成模块化单体，IDDD 用独立项目；业务语言和事实权威才是边界起点。</p></article>
+        <article class="panel"><h3>每个上下文可有不同局部架构</h3><p>同一系统里，复杂 Lending 用六边形，简单 Catalogue 用 CRUD；读侧也可按功能组织。</p></article>
+        <article class="panel"><h3>聚合由即时不变式约束</h3><p>Cargo 聚合内同步派生 Delivery，HandlingEvent 跨聚合异步影响它；一致性时机说明边界。</p></article>
+        <article class="panel"><h3>端口属于需求消费者</h3><p>RoutingService、FindAvailableBook、EventStore 分别由真正需要能力的模型或用例拥有。</p></article>
+        <article class="panel"><h3>CQRS 应渐进采用</h3><p>先分职责，再分模型；只有读写压力、扩展或组织边界确实需要时才分存储。</p></article>
+        <article class="panel"><h3>事件可靠性不止 Outbox</h3><p>顺序键、幂等、检查点、投影重建和 schema 演进必须成为同一审查链。</p></article>
+        <article class="panel"><h3>测试承载架构意图</h3><p>业务规格、用例测试、适配器契约、完整场景和 ArchUnit 分别保护不同层面的承诺。</p></article>
+        <article class="panel"><h3>旧项目可保留新思想</h3><p>IDDD 的 Java 7 不能直接采用，但上下文自治和投影结构仍有价值；技术年代与设计价值要分开标注。</p></article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-heading"><span class="section-number">00.4 / 核心案例</span><div><h2>七条下钻路径</h2><p>建议先读 Library，再按当前问题选择其余案例。</p></div></div>
+      <div class="grid-3">
+        <a class="panel" href="projects.html#library"><span class="badge">首选</span><h3>Library</h3><p>发现、局部架构、一致性、ArchUnit</p></a>
+        <a class="panel" href="projects.html#dddsample"><span class="badge">经典</span><h3>DDDSample</h3><p>Cargo 通用语言与场景测试</p></a>
+        <a class="panel" href="projects.html#cargotracker"><span class="badge">对照</span><h3>Cargo Tracker</h3><p>Jakarta EE 平台权衡</p></a>
+        <a class="panel" href="projects.html#iddd-samples"><span class="badge">上下文</span><h3>IDDD Samples</h3><p>多上下文与不同技术风格</p></a>
+        <a class="panel" href="projects.html#java-cqrs-intro"><span class="badge">演进</span><h3>Java CQRS Intro</h3><p>CQRS 五级梯度</p></a>
+        <a class="panel" href="projects.html#es-cqrs-examples"><span class="badge">事件</span><h3>ES/CQRS Examples</h3><p>顺序、幂等与乐观并发</p></a>
+        <a class="panel" href="projects.html#project-manager"><span class="badge">工作坊</span><h3>Project Manager</h3><p>需求与模型的分支演进</p></a>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-heading"><span class="section-number">00.5 / 阅读路线</span><div><h2>按你现在要做的事阅读</h2></div></div>
+      <div class="grid-3">
+        <article class="panel"><p class="eyebrow">15 min</p><h3>快速了解</h3><ol><li>本页八条结论</li><li><a href="projects.html#library">Library 主案例</a></li><li><a href="skill-gaps.html#gap-discovery">P0 差距</a></li></ol></article>
+        <article class="panel"><p class="eyebrow">45 min</p><h3>架构决策评审</h3><ol><li><a href="patterns.html#contexts">上下文</a></li><li><a href="patterns.html#cqrs">CQRS</a></li><li><a href="patterns.html#events">事件</a></li><li><a href="resources.html">原始资料</a></li></ol></article>
+        <article class="panel"><p class="eyebrow">Workshop</p><h3>技能优化讨论</h3><ol><li><a href="skill-gaps.html#gap-discovery">发现证据</a></li><li><a href="skill-gaps.html#gap-context-mapping">上下文映射</a></li><li><a href="skill-gaps.html#gap-cqrs">CQRS 梯度</a></li><li><a href="skill-gaps.html#gap-guardrails">生成器守护</a></li></ol></article>
+      </div>
+    </section>
+
+    <aside class="callout"><p class="eyebrow">Bottom line</p><h3>先增强“如何作出决定”，再增强“自动生成什么”</h3><p>当前项目已经有清楚的依赖不变量与六模块模板。下一步价值最高的改进，是让模型证据、上下文关系、CQRS/事件条件和架构守护更可执行，而不是继续增加技术专题数量。</p><div class="source-links"><a href="skill-gaps.html">查看完整差距矩阵</a><a href="resources.html">查看全部来源</a></div></aside>
   </main>
   <footer><span>DDD / JVM FIELD NOTES</span><span>资料核对日期：2026-07-14</span></footer>
 </body>

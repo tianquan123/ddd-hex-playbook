@@ -141,6 +141,50 @@ class ReportContractTests(unittest.TestCase):
             with self.subTest(expected=expected):
                 self.assertIn(expected, text)
 
+    def test_resource_index_exposes_problem_oriented_filters(self):
+        text = self.read_page("resources.html")
+        for label in ("全部", "建模", "边界", "事件", "测试", "演进"):
+            with self.subTest(label=label):
+                self.assertIn(label, text)
+        for value in ("all", "modeling", "boundaries", "events", "testing", "evolution"):
+            with self.subTest(filter=value):
+                self.assertIn(f'data-filter="{value}"', text)
+
+    def test_gap_rows_explain_current_state_evidence_action_target_and_risk(self):
+        text = self.read_page("skill-gaps.html")
+        for label in ("现状", "证据", "建议", "落点", "风险", "置信度"):
+            with self.subTest(label=label):
+                self.assertIn(label, text)
+        for gap_id in (
+            "gap-discovery",
+            "gap-context-mapping",
+            "gap-local-architecture",
+            "gap-cqrs",
+            "gap-events",
+            "gap-guardrails",
+        ):
+            with self.subTest(gap=gap_id):
+                self.assertIn(f'id="{gap_id}"', text)
+
+    def test_homepage_summarizes_core_thesis_and_links_to_studies_and_gaps(self):
+        text = self.read_page("index.html")
+        for thesis in ("先发现，再建模", "让边界可执行", "复杂度按需引入"):
+            with self.subTest(thesis=thesis):
+                self.assertIn(thesis, text)
+        for study in (
+            "library",
+            "dddsample",
+            "cargotracker",
+            "iddd-samples",
+            "java-cqrs-intro",
+            "es-cqrs-examples",
+            "project-manager",
+        ):
+            with self.subTest(study=study):
+                self.assertIn(f'projects.html#{study}', text)
+        self.assertIn("skill-gaps.html#gap-discovery", text)
+        self.assertIn("skill-gaps.html#gap-guardrails", text)
+
 
 if __name__ == "__main__":
     unittest.main()

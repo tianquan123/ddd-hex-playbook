@@ -1,17 +1,63 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Awesome DDD 中 JVM、博客和社区资源的分类索引">
-  <title>延伸资源索引</title><link rel="stylesheet" href="assets/styles.css"><script src="assets/app.js" defer></script>
+  <title>延伸资源索引</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <script src="assets/app.js" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#content">跳到正文</a>
   <header class="site-header"><a class="brand" href="index.html">DDD / JVM FIELD NOTES</a><nav class="site-nav" aria-label="主导航"><a href="index.html">总览</a><a href="projects.html">核心项目</a><a href="patterns.html">设计模式</a><a href="resources.html" aria-current="page">资源索引</a><a href="skill-gaps.html">技能差距</a></nav></header>
   <main id="content" class="page-shell">
     <section class="hero"><div class="hero-index"><strong>03</strong><span class="eyebrow">Resource index</span></div><div class="hero-copy"><p class="eyebrow">Samples · blogs · community</p><h1>延伸资源索引</h1><p class="lede">以用途和阅读优先级整理链接，而不是再造一份无差别收藏夹。</p></div></section>
-    <section class="section"><div class="section-heading"><span class="section-number">03.1 / 检索</span><div><h2>按问题找材料</h2><p>资源将按建模、边界、事件、测试与演进主题筛选。</p></div></div></section>
+    <section class="section">
+      <div class="section-heading"><span class="section-number">03.1 / 检索</span><div><h2>按问题找材料</h2><p>筛选可以组合阅读目标；“必读”表示对当前技能优化最直接，不表示项目整体最先进。</p></div></div>
+      <div class="filter-bar" role="group" aria-label="资源主题筛选">
+        <button type="button" data-filter="all" aria-pressed="true">全部</button>
+        <button type="button" data-filter="modeling" aria-pressed="false">建模</button>
+        <button type="button" data-filter="boundaries" aria-pressed="false">边界</button>
+        <button type="button" data-filter="events" aria-pressed="false">事件</button>
+        <button type="button" data-filter="testing" aria-pressed="false">测试</button>
+        <button type="button" data-filter="evolution" aria-pressed="false">演进</button>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="sample-title">
+      <div class="section-heading"><span class="section-number">03.2 / JVM Samples</span><div><h2 id="sample-title">样例项目</h2><p>先看真实业务与测试，再看技术组合。</p></div></div>
+      <div class="grid-3">
+        <article class="resource-card" data-tags="modeling boundaries events testing evolution"><span class="badge">必读</span><h3>DDD by Examples — Library</h3><p>从 Event Storming 到局部架构、CQRS、一致性测试和 ArchUnit 的完整主案例。</p><div class="source-links"><a target="_blank" rel="noreferrer" href="https://github.com/ddd-by-examples/library">github.com</a></div></article>
+        <article class="resource-card" data-tags="modeling boundaries testing"><span class="badge">必读</span><h3>DDDSample Core</h3><p>经典 Cargo 通用语言、聚合、领域服务、应用事务与完整生命周期场景。</p><div class="source-links"><a target="_blank" rel="noreferrer" href="https://github.com/citerus/dddsample-core">github.com</a></div></article>
+        <article class="resource-card" data-tags="modeling boundaries testing"><span class="badge">选读</span><h3>Eclipse Cargo Tracker</h3><p>同一 Cargo 模型在 Jakarta EE 中的端到端实现，适合识别模型与平台的分界。</p><div class="source-links"><a target="_blank" rel="noreferrer" href="https://github.com/eclipse-ee4j/cargotracker">github.com</a></div></article>
+        <article class="resource-card" data-tags="boundaries events evolution"><span class="badge">概念参考</span><h3>IDDD Samples</h3><p>多个限界上下文、不同持久化风格、端口适配器、事件溯源与读模型投影。</p><div class="source-links"><a target="_blank" rel="noreferrer" href="https://github.com/VaughnVernon/IDDD_Samples">github.com</a></div></article>
+        <article class="resource-card" data-tags="events testing evolution"><span class="badge">必读</span><h3>Java CQRS Intro</h3><p>从无 CQRS 到分方法、分模型、分存储和事件溯源的演进梯度。</p><div class="source-links"><a target="_blank" rel="noreferrer" href="https://github.com/asc-lab/java-cqrs-intro">github.com</a></div></article>
+        <article class="resource-card" data-tags="events testing"><span class="badge">专题必读</span><h3>Event Sourcing &amp; CQRS Examples</h3><p>事件版本、乐观并发、乱序处理、幂等回放与投影的清晰 Java 示例。</p><div class="source-links"><a target="_blank" rel="noreferrer" href="https://github.com/andreschaffer/event-sourcing-cqrs-examples">github.com</a></div></article>
+        <article class="resource-card" data-tags="modeling boundaries testing evolution"><span class="badge">工作坊</span><h3>Project Manager</h3><p>十步业务需求与 start/finish 分支，适合练习模型如何被新规则持续挑战。</p><div class="source-links"><a target="_blank" rel="noreferrer" href="https://github.com/mkopylec/project-manager">github.com</a></div></article>
+        <article class="resource-card" data-tags="modeling boundaries testing"><span class="badge">工作流</span><h3>DDD Practitioners Reference</h3><p>Event Storming、Canvas、Example Mapping、Specification by Example 到 Java 代码的串联路线。</p><div class="source-links"><a target="_blank" rel="noreferrer" href="https://github.com/humank/ddd-practitioners-ref">github.com</a></div></article>
+        <article class="resource-card" data-tags="modeling boundaries testing"><span class="badge">选读</span><h3>DDD Leaven v2</h3><p>Spring/JPA 上的战术构件和可移植业务编程模型；强调“理解并改造”，不要继承框架。</p><div class="source-links"><a target="_blank" rel="noreferrer" href="https://github.com/BottegaIT/ddd-leaven-v2">github.com</a></div></article>
+        <article class="resource-card" data-tags="events testing evolution"><span class="badge">参考</span><h3>Eventuate Event Sourcing Examples</h3><p>Java/Spring 的微服务转账案例，展示聚合事件溯源、独立查询服务与事件驱动的最终一致性；技术栈较旧，适合读模式而非照搬依赖。</p><div class="source-links"><a target="_blank" rel="noreferrer" href="https://github.com/cer/event-sourcing-examples">github.com</a></div></article>
+        <article class="resource-card" data-tags="events boundaries evolution"><span class="badge badge-warn">归档参考</span><h3>Akka CQRS/ES Demo</h3><p>Scala/Akka 下的 CQRS 与事件溯源；仓库已于 2017 年归档，只用于比较 actor 模型的并发边界。</p><div class="source-links"><a target="_blank" rel="noreferrer" href="https://github.com/mdonkers/akka-cqrs-es-demo">github.com</a></div></article>
+        <article class="resource-card" data-tags="boundaries evolution"><span class="badge">参考</span><h3>Clean Architecture + DDD Intro</h3><p>Micronaut 下的简洁 DDD/Clean Architecture 示例，用于比较框架入口与核心边界。</p><div class="source-links"><a target="_blank" rel="noreferrer" href="https://github.com/felipexw/clean-arch-ddd-intro">github.com</a></div></article>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="community-title">
+      <div class="section-heading"><span class="section-number">03.3 / Community</span><div><h2 id="community-title">博客与社区材料</h2><p>用于补足样例项目中不容易通过目录看到的协作、关系和决策语义。</p></div></div>
+      <div class="grid-3">
+        <article class="resource-card" data-tags="modeling boundaries"><span class="badge">必读</span><h3>DDD Crew — Context Mapping</h3><p>九种上下文映射模式、三类团队关系，以及“用小地图回答明确问题”的实践建议。</p><div class="source-links"><a target="_blank" rel="noreferrer" href="https://github.com/ddd-crew/context-mapping">github.com</a></div></article>
+        <article class="resource-card" data-tags="modeling boundaries"><span class="badge">必读</span><h3>Effective Aggregate Design</h3><p>从一致性规则约束聚合大小、用身份引用其他聚合、跨聚合采用业务允许的一致性。</p><div class="source-links"><a target="_blank" rel="noreferrer" href="https://www.dddcommunity.org/library/vernon_2011/">dddcommunity.org</a></div></article>
+        <article class="resource-card" data-tags="modeling evolution"><span class="badge">选读</span><h3>DDD Heuristics</h3><p>把社区经验作为可讨论的启发式，而不是无条件定律，适合补强规则级别表达。</p><div class="source-links"><a target="_blank" rel="noreferrer" href="https://www.dddheuristics.com/">dddheuristics.com</a></div></article>
+        <article class="resource-card" data-tags="modeling boundaries evolution"><span class="badge">必读</span><h3>Alberto Brandolini / EventStorming</h3><p>协作式学习、矛盾语言、热点和参与者互动，是发现边界的重要证据。</p><div class="source-links"><a target="_blank" rel="noreferrer" href="https://www.eventstorming.com/">eventstorming.com</a><a target="_blank" rel="noreferrer" href="https://ziobrando.blogspot.com/">博客</a></div></article>
+        <article class="resource-card" data-tags="boundaries evolution"><span class="badge">选读</span><h3>Grouping and Organizing Classes</h3><p>用 Project Manager 的不同分支比较分层、六边形和按功能组织，避免目录先行。</p><div class="source-links"><a target="_blank" rel="noreferrer" href="https://allegro.tech/2019/12/grouping-and-organizing-classes.html">allegro.tech</a></div></article>
+        <article class="resource-card" data-tags="events evolution"><span class="badge">基础</span><h3>Martin Fowler — Event Sourcing / CQRS</h3><p>回到模式原义，区分事件记录状态变化与命令查询职责分离。</p><div class="source-links"><a target="_blank" rel="noreferrer" href="https://martinfowler.com/eaaDev/EventSourcing.html">Event Sourcing</a><a target="_blank" rel="noreferrer" href="https://martinfowler.com/bliki/CQRS.html">CQRS</a></div></article>
+        <article class="resource-card" data-tags="modeling boundaries events testing evolution"><span class="badge">索引</span><h3>Awesome DDD</h3><p>本次调研入口；描述只用于发现候选，结论仍需回到原仓库与代码核验。</p><div class="source-links"><a target="_blank" rel="noreferrer" href="https://github.com/heynickc/awesome-ddd#sample-projects">github.com</a></div></article>
+      </div>
+    </section>
+    <aside class="callout"><p class="eyebrow">Reading rule</p><h3>先带着问题阅读</h3><p>不要问“哪个项目最标准”；问“它解决了什么业务压力、牺牲了什么、测试如何证明边界、哪些条件在我的项目里并不存在”。</p></aside>
   </main>
-  <footer><span>返回 <a href="index.html">研究总览</a></span><span>资料核对日期：2026-07-14</span></footer>
+  <footer><span>所有链接核对于 2026-07-14</span><span>返回 <a href="index.html">研究总览</a></span></footer>
 </body>
 </html>
