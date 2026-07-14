@@ -68,6 +68,7 @@ data/server_boot.log
 .DS_Store
 Thumbs.db
 /.superpowers/
+/.worktrees/
 /docs/
 /example-ordering/
 /evals/
