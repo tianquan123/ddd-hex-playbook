@@ -1,0 +1,8 @@
+{
+  "run_id": "candidate",
+  "skill_commit": "f4f69ab61b57899761283681cd6d2205d9dc7078",
+  "date": "2026-07-15",
+  "cases_file": "evals/cases.json",
+  "baseline_run": "evals/runs/baseline",
+  "response_count": 10
+}

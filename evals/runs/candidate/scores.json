@@ -1,0 +1,182 @@
+{
+  "run_id": "candidate",
+  "total_cases": 10,
+  "total_points": 51.0,
+  "max_points": 52.0,
+  "percentage": 98.08,
+  "critical_failures": 0,
+  "release_gate_passed": true,
+  "cases": [
+    {
+      "id": "db-table-to-aggregate",
+      "dimensions": {
+        "must_1": 1.0,
+        "must_2": 0.5,
+        "must_3": 1.0
+      },
+      "total": 2.5,
+      "critical_failure": false,
+      "evidence": [
+        "明确拒绝用外键确定聚合，并将合并与拆分都标为未验证候选。",
+        "提到生命周期、不变式、延迟与补偿，并追问命令失败条件，但未形成明确的命令及成功/失败结果证据清单。"
+      ]
+    },
+    {
+      "id": "ambiguous-account-contexts",
+      "dimensions": {
+        "must_1": 1.0,
+        "must_2": 1.0,
+        "must_3": 1.0,
+        "must_4": 1.0,
+        "must_5": 1.0,
+        "must_6": 1.0
+      },
+      "total": 6.0,
+      "critical_failure": false,
+      "evidence": [
+        "区分登录账号与资金账户，并分别指定身份和资金事实权威。",
+        "提供有方向的两节点 Context Map、字段完整的关系表和独立热点列表。",
+        "先陈述独立发布、权威和传播事实，再将 Separate Ways 标为候选模式。"
+      ]
+    },
+    {
+      "id": "order-payment-aggregate",
+      "dimensions": {
+        "must_1": 1.0,
+        "must_2": 1.0,
+        "must_3": 1.0,
+        "must_4": 1.0,
+        "must_5": 1.0
+      },
+      "total": 5.0,
+      "critical_failure": false,
+      "evidence": [
+        "以即时不变式、合法等待支付、晚到失败和独立补偿为拆分依据。",
+        "建模决策包显式覆盖范围、证据热点、术语、不变式、候选、排除项与未验证假设。",
+        "末尾工程交接契约完整覆盖要求的九类固定槽位。"
+      ]
+    },
+    {
+      "id": "simple-catalog-crud",
+      "dimensions": {
+        "must_1": 1.0,
+        "must_2": 1.0,
+        "must_3": 0.5,
+        "must_4": 1.0,
+        "must_5": 1.0
+      },
+      "total": 4.5,
+      "critical_failure": false,
+      "evidence": [
+        "明确选择简单 CRUD/Transaction Script，并用无跨字段不变式和复杂生命周期支持决定。",
+        "给出按编辑与查询业务切片组织的最小写读路径、测试和可观察升级触发条件。",
+        "明确不在上下文内部复制六层，但未完整说明六模块仅表达项目级编译与装配边界。"
+      ]
+    },
+    {
+      "id": "order-lifecycle-rich-domain",
+      "dimensions": {
+        "must_1": 1.0,
+        "must_2": 1.0,
+        "must_3": 1.0,
+        "must_4": 1.0,
+        "must_5": 1.0
+      },
+      "total": 5.0,
+      "critical_failure": false,
+      "evidence": [
+        "明确选择富领域模型/Hexagonal 局部策略，并由 Order 聚合守护数量冻结与发货后禁取消。",
+        "Application 负责编排和事务，HTTP 与 Job 仅作不同入站适配器。",
+        "分别提出纯 Domain、Application、入口切片及并发集成测试。"
+      ]
+    },
+    {
+      "id": "simple-pagination-cqrs",
+      "dimensions": {
+        "must_1": 1.0,
+        "must_2": 1.0,
+        "must_3": 1.0,
+        "must_4": 1.0,
+        "must_5": 1.0
+      },
+      "total": 5.0,
+      "critical_failure": false,
+      "evidence": [
+        "明确编号为 CQRS 第 2 级，并保留同服务同数据库。",
+        "逐级拒绝专用读模型、异步投影、独立存储和 Event Sourcing，理由均绑定当前证据。",
+        "直接返回分页读 DTO，并给出基于延迟、扫描量和资源争用指标的升级条件。"
+      ]
+    },
+    {
+      "id": "operations-report-cqrs",
+      "dimensions": {
+        "must_1": 1.0,
+        "must_2": 1.0,
+        "must_3": 1.0,
+        "must_4": 1.0,
+        "must_5": 1.0
+      },
+      "total": 5.0,
+      "critical_failure": false,
+      "evidence": [
+        "明确选择 CQRS 第 4 级异步投影且暂时共用数据库基础设施。",
+        "定义五分钟窗口、检查点、幂等、影子投影重建与切换恢复流程。",
+        "列出新增运维成本，并分别说明停止在第 4 级而不选独立存储与 Event Sourcing 的依据。"
+      ]
+    },
+    {
+      "id": "local-domain-event",
+      "dimensions": {
+        "must_1": 1.0,
+        "must_2": 1.0,
+        "must_3": 1.0,
+        "must_4": 1.0
+      },
+      "total": 4.0,
+      "critical_failure": false,
+      "evidence": [
+        "先分类为本地 Domain Event/进程内协调档位。",
+        "将 OrderConfirmed 业务事实与 Spring 事务监听传输机制分离。",
+        "仅检查所有者、聚合来源、技术无关性和提交后时序，并明确不套用 Outbox、可靠集成事件与 Event Sourcing 清单。"
+      ]
+    },
+    {
+      "id": "integration-event",
+      "dimensions": {
+        "must_1": 1.0,
+        "must_2": 1.0,
+        "must_3": 1.0,
+        "must_4": 1.0,
+        "must_5": 1.0,
+        "must_6": 1.0,
+        "must_7": 1.0
+      },
+      "total": 7.0,
+      "critical_failure": false,
+      "evidence": [
+        "先分类为可靠 Integration Event，并区分内部事件类与版本化外部契约。",
+        "要求订单状态与 Outbox 原子写入，定义 orderId 顺序键和消费者幂等键。",
+        "完整覆盖 Relay/消费进度、未知结果、重试、DLQ、至少一次语义，并明确 Outbox 不是端点。"
+      ]
+    },
+    {
+      "id": "event-sourcing",
+      "dimensions": {
+        "must_1": 1.0,
+        "must_2": 1.0,
+        "must_3": 1.0,
+        "must_4": 1.0,
+        "must_5": 1.0,
+        "must_6": 1.0,
+        "must_7": 1.0
+      },
+      "total": 7.0,
+      "critical_failure": false,
+      "evidence": [
+        "先分类为 Event Sourcing，并审查事件流版本与 expectedVersion 乐观并发。",
+        "覆盖确定性回放、投影幂等、检查点原子推进及影子投影从头重建。",
+        "将快照限定为优化，覆盖 schema 版本/upcaster/历史迁移并要求量化查询陈旧窗口。"
+      ]
+    }
+  ]
+}
