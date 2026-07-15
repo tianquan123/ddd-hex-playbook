@@ -116,6 +116,29 @@ class SkillContractTests(unittest.TestCase):
         ):
             self.assertIn(text, rubric)
 
+    def test_modeling_decision_references_define_approved_contracts(self) -> None:
+        expected = {
+            "discovery-evidence.md": (
+                "参与者", "命令", "领域事件", "策略", "外部系统",
+                "业务时间边界", "热点", "示例", "反例",
+            ),
+            "context-mapping.md": (
+                "小地图", "关系表", "事实权威", "上游", "下游",
+                "翻译责任", "先描述关系事实",
+            ),
+            "engineering-handoff.md": (
+                "业务目标", "成功结果", "失败结果", "即时一致",
+                "补偿", "查询需求", "一致性窗口", "禁止固化",
+            ),
+        }
+        root = SKILLS["ddd-modeling"] / "references"
+        for filename, fragments in expected.items():
+            text = read_utf8(root / filename)
+            with self.subTest(reference=filename):
+                for fragment in fragments:
+                    self.assertIn(fragment, text)
+                self.assertNotRegex(text, r"\]\([^)]*/references/")
+
 
 if __name__ == "__main__":
     unittest.main()
