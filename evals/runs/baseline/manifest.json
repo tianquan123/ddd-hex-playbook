@@ -1,7 +1,0 @@
-{
-  "run_id": "baseline",
-  "skill_commit": "b809ab78b9c9aa6b1483d7fbdd4aba6fb67db82e",
-  "date": "2026-07-15",
-  "cases_file": "evals/cases.json",
-  "response_count": 10
-}

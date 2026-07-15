@@ -214,7 +214,7 @@ python -m unittest tests.test_skill_contracts -v
 python -m unittest discover -s ddd-project-create/tests -p "test_*.py" -v
 ```
 
-`evals/runs/` 保存隔离运行的行为证据、评分和前后对比；运行者不会收到评分规则或预期答案。本轮决策质量优化不修改生成器的六模块模板、依赖或生成行为。
+技能决策质量优化不修改生成器的六模块模板、依赖或生成行为。
 
 静态校验一个已生成项目：
 
