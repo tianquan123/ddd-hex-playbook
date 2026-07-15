@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import re
 import unittest
 from pathlib import Path
@@ -78,6 +79,42 @@ class SkillContractTests(unittest.TestCase):
             for reference in (skill_dir / "references").glob("*.md"):
                 with self.subTest(skill=skill_name, reference=reference.name):
                     self.assertNotRegex(read_utf8(reference), markdown_link)
+
+    def test_behavior_cases_have_stable_schema_and_ids(self) -> None:
+        cases = json.loads(read_utf8(ROOT / "evals" / "cases.json"))
+        expected_ids = {
+            "db-table-to-aggregate",
+            "ambiguous-account-contexts",
+            "order-payment-aggregate",
+            "simple-catalog-crud",
+            "order-lifecycle-rich-domain",
+            "simple-pagination-cqrs",
+            "operations-report-cqrs",
+            "local-domain-event",
+            "integration-event",
+            "event-sourcing",
+        }
+        self.assertEqual(expected_ids, {case["id"] for case in cases})
+        self.assertEqual(len(cases), len({case["id"] for case in cases}))
+        required = {
+            "id", "skill", "prompt", "fixture", "must", "forbidden",
+            "critical_forbidden", "questions", "alternatives",
+        }
+        for case in cases:
+            with self.subTest(case=case["id"]):
+                self.assertEqual(required, set(case))
+                self.assertIn(case["skill"], SKILLS)
+                self.assertTrue(case["prompt"])
+                self.assertTrue(case["must"])
+                self.assertTrue(case["critical_forbidden"])
+
+    def test_behavior_rubric_defines_semantic_scoring_and_release_gate(self) -> None:
+        rubric = read_utf8(ROOT / "evals" / "rubric.md")
+        for text in (
+            "语义评分", "关键禁行项", "90%", "不得向运行者泄露",
+            "不是逐字匹配", "原始响应",
+        ):
+            self.assertIn(text, rubric)
 
 
 if __name__ == "__main__":
