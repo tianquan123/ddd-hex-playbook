@@ -155,6 +155,29 @@ class SkillContractTests(unittest.TestCase):
         self.assertIn("被排除", text)
         self.assertIn("未验证", text)
 
+    def test_local_architecture_reference_supports_three_context_strategies(self) -> None:
+        text = read_utf8(
+            SKILLS["java-spring-hex-playbook"] / "references" / "module-strategies.md"
+        )
+        for fragment in (
+            "简单 CRUD", "Transaction Script", "富领域模型", "Hexagonal",
+            "独立查询", "CQRS Read Side", "同一个部署单元", "局部架构",
+            "不要求每个上下文内部复制六层",
+        ):
+            self.assertIn(fragment, text)
+
+    def test_cqrs_reference_defines_minimum_sufficient_ladder(self) -> None:
+        text = read_utf8(
+            SKILLS["java-spring-hex-playbook"] / "references" / "cqrs-decision-ladder.md"
+        )
+        for fragment in (
+            "最小充分复杂度", "分离命令与查询方法", "分离 Command/Query 接口",
+            "共用数据库", "异步投影", "独立读写存储", "Event Sourcing",
+            "一致性窗口", "投影恢复", "运维成本", "不是成熟度阶梯",
+            "为什么不选择更高一级",
+        ):
+            self.assertIn(fragment, text)
+
 
 if __name__ == "__main__":
     unittest.main()
