@@ -178,6 +178,28 @@ class SkillContractTests(unittest.TestCase):
         ):
             self.assertIn(fragment, text)
 
+    def test_event_reference_uses_three_semantic_profiles(self) -> None:
+        text = read_utf8(
+            SKILLS["java-spring-hex-playbook"] / "references" / "transactions-and-events.md"
+        )
+        for fragment in (
+            "本地 Domain Event", "可靠 Integration Event", "Event Sourcing",
+            "事实所有者", "契约版本", "分区键", "消费者幂等键", "DLQ",
+            "乐观并发", "检查点", "投影重建", "schema 演进",
+            "Outbox 不是终点", "按事件语义裁剪",
+        ):
+            self.assertIn(fragment, text)
+
+    def test_engineering_skill_checks_handoff_and_routes_decisions(self) -> None:
+        text = read_utf8(SKILLS["java-spring-hex-playbook"] / "SKILL.md")
+        for fragment in (
+            "工程交接契约", "退回 `ddd-modeling`", "局部架构",
+            "references/module-strategies.md", "references/cqrs-decision-ladder.md",
+            "三档事件审查", "当前建议停在哪一级", "为什么不选择更高一级",
+            "不自行补造业务事实",
+        ):
+            self.assertIn(fragment, text)
+
 
 if __name__ == "__main__":
     unittest.main()
