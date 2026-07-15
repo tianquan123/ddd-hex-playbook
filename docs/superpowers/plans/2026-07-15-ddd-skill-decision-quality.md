@@ -163,12 +163,14 @@ Expected: `test_frontmatter_and_direct_references_are_valid` passes; `test_ui_me
 Run:
 
 ```powershell
-python "$HOME\.codex\skills\.system\skill-creator\scripts\generate_openai_yaml.py" ddd-modeling `
+python -X utf8 "$HOME\.codex\skills\.system\skill-creator\scripts\generate_openai_yaml.py" ddd-modeling `
+  --name ddd-modeling `
   --interface 'display_name=DDD Modeling' `
   --interface 'short_description=从真实业务场景、不变式与语言冲突推导可验证的领域模型' `
   --interface 'default_prompt=Use $ddd-modeling to derive a domain model from business scenarios, invariants, and language boundaries.'
 
-python "$HOME\.codex\skills\.system\skill-creator\scripts\generate_openai_yaml.py" java-spring-hex-playbook `
+python -X utf8 "$HOME\.codex\skills\.system\skill-creator\scripts\generate_openai_yaml.py" java-spring-hex-playbook `
+  --name java-spring-hex-playbook `
   --interface 'display_name=Java Spring Hex Playbook' `
   --interface 'short_description=基于项目事实审查 Java/Spring 六边形架构决策' `
   --interface 'default_prompt=Use $java-spring-hex-playbook to review a Java/Spring architecture decision from project facts and dependency boundaries.'
@@ -865,9 +867,9 @@ Run:
 ```powershell
 python -m pip install --disable-pip-version-check --target "$env:TEMP\ddd-skill-validator" PyYAML
 $env:PYTHONPATH="$env:TEMP\ddd-skill-validator"
-python "$HOME\.codex\skills\.system\skill-creator\scripts\quick_validate.py" ddd-modeling
-python "$HOME\.codex\skills\.system\skill-creator\scripts\quick_validate.py" java-spring-hex-playbook
-python "$HOME\.codex\skills\.system\skill-creator\scripts\quick_validate.py" ddd-project-create
+python -X utf8 "$HOME\.codex\skills\.system\skill-creator\scripts\quick_validate.py" ddd-modeling
+python -X utf8 "$HOME\.codex\skills\.system\skill-creator\scripts\quick_validate.py" java-spring-hex-playbook
+python -X utf8 "$HOME\.codex\skills\.system\skill-creator\scripts\quick_validate.py" ddd-project-create
 ```
 
 Expected: each validator prints `Skill is valid!` and exits 0. Do not add PyYAML to the repository.
