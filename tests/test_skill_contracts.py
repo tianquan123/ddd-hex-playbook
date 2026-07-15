@@ -139,6 +139,22 @@ class SkillContractTests(unittest.TestCase):
                     self.assertIn(fragment, text)
                 self.assertNotRegex(text, r"\]\([^)]*/references/")
 
+    def test_modeling_skill_routes_adaptive_tracks_and_handoff(self) -> None:
+        text = read_utf8(SKILLS["ddd-modeling"] / "SKILL.md")
+        for fragment in (
+            "快速评审轨", "发现建模轨", "建模决策包", "工程交接契约",
+            "references/discovery-evidence.md", "references/context-mapping.md",
+            "references/engineering-handoff.md", "一次只追问一个问题",
+            "不自动修改", "Direct-answer exception",
+        ):
+            self.assertIn(fragment, text)
+
+    def test_modeling_skill_keeps_implementation_out_of_domain_output(self) -> None:
+        text = read_utf8(SKILLS["ddd-modeling"] / "SKILL.md")
+        self.assertIn("不规定 Java 包和框架", text)
+        self.assertIn("被排除", text)
+        self.assertIn("未验证", text)
+
 
 if __name__ == "__main__":
     unittest.main()
