@@ -353,7 +353,10 @@ class ManifestValidationTests(unittest.TestCase):
 
     def test_real_template_uses_business_slice_packages_and_names(self) -> None:
         template = SKILL_ROOT / "assets" / "project-template"
-        java_sources = list(template.rglob("*.java"))
+        java_sources = [
+            path for path in template.rglob("*.java")
+            if "target" not in path.relative_to(template).parts
+        ]
         source_text = "\n".join(path.read_text(encoding="utf-8") for path in java_sources)
 
         self.assertNotIn(".sample.", source_text)
