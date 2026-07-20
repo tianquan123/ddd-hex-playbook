@@ -39,7 +39,7 @@ PLACEHOLDERS = [
 
 def minimal_manifest() -> dict[str, object]:
     return {
-        "template_version": "1.0.0",
+        "template_version": "2.0.0",
         "placeholders": PLACEHOLDERS,
         "text_extensions": [".txt", ".xml", ".java", ".md", ".yml", ".yaml", ".properties", ".cmd"],
         "text_filenames": ["mvnw", ".gitignore"],
@@ -48,6 +48,33 @@ def minimal_manifest() -> dict[str, object]:
         "build_commands": {
             "windows": ["mvnw.cmd", "verify"],
             "posix": ["./mvnw", "verify"],
+        },
+        "module_dependencies": {
+            "api": [],
+            "domain": [],
+            "application": ["domain"],
+            "infra": ["application", "domain"],
+            "trigger": ["api", "application"],
+            "starter": ["trigger", "infra", "application", "domain"],
+        },
+        "java_rules": {
+            "forbidden_imports": {
+                "domain": ["org.springframework.", "org.apache.dubbo.", "org.mybatis.", ".application.", ".infra.", ".trigger."],
+                "application": [".api.", ".facade.", ".infra.", ".trigger."],
+                "trigger": [".infra."],
+            },
+            "suffix_packages": {
+                "DO": ".infra.sampleorder.persistence.entity",
+                "Controller": ".trigger.http.sampleorder",
+                "Provider": ".trigger.rpc.sampleorder",
+                "PersistenceAdapter": ".infra.sampleorder.adapter",
+                "BeanConfiguration": ".bean",
+            },
+            "forbid_records": True,
+            "mapstruct_required_fragments": [
+                "Mappers.getMapper(",
+                "unmappedTargetPolicy = ReportingPolicy.ERROR",
+            ],
         },
     }
 
@@ -102,6 +129,138 @@ class InputValidationTests(unittest.TestCase):
 
 
 class ManifestValidationTests(unittest.TestCase):
+    def write_java(
+        self,
+        project: Path,
+        module: str,
+        package: str,
+        class_name: str,
+        body: str = "public class Sample {}",
+    ) -> Path:
+        path = (project / f"order-service-{module}" / "src" / "main" / "java"
+                / Path(*package.split(".")) / f"{class_name}.java")
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(f"package {package};\n{body}\n", encoding="utf-8")
+        return path
+
+    def replacements(self) -> dict[str, str]:
+        return {
+            "__DDD_PROJECT_NAME__": "order-service",
+            "__DDD_GROUP_ID__": "com.example",
+            "__DDD_BASE_PACKAGE__": "com.example",
+            "__DDD_BASE_PACKAGE_PATH__": "com/example",
+            "__DDD_PROJECT_CLASS__": "OrderService",
+        }
+
+    def write_reactor(self, project: Path, dependencies: dict[str, list[str]]) -> None:
+        namespace = "http://maven.apache.org/POM/4.0.0"
+        for module, required in dependencies.items():
+            module_dir = project / f"order-service-{module}"
+            module_dir.mkdir(parents=True, exist_ok=True)
+            dependency_xml = "".join(
+                "<dependency><groupId>com.example</groupId>"
+                f"<artifactId>order-service-{dependency}</artifactId></dependency>"
+                for dependency in required
+            )
+            (module_dir / "pom.xml").write_text(
+                f'<project xmlns="{namespace}"><modelVersion>4.0.0</modelVersion>'
+                f'<groupId>com.example</groupId><artifactId>order-service-{module}</artifactId>'
+                f'<dependencies>{dependency_xml}</dependencies></project>',
+                encoding="utf-8",
+            )
+
+    def test_manifest_2_requires_architecture_contract(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            manifest = minimal_manifest()
+            manifest.pop("module_dependencies")
+            manifest.pop("java_rules")
+            path = Path(tmp) / "manifest.json"
+            path.write_text(json.dumps(manifest), encoding="utf-8")
+
+            with self.assertRaisesRegex(ValueError, "java_rules.*module_dependencies"):
+                load_manifest(path)
+
+    def test_rejects_java_package_that_does_not_match_source_path(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp)
+            path = project / "order-service-domain/src/main/java/com/example/domain/sampleorder/model/Sample.java"
+            path.parent.mkdir(parents=True)
+            path.write_text("package com.example.domain.wrong; public class Sample {}", encoding="utf-8")
+
+            errors = validate_generated_project(project, minimal_manifest(), self.replacements())
+
+            self.assertTrue(any("package path" in error for error in errors))
+
+    def test_rejects_forbidden_domain_import(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp)
+            self.write_java(project, "domain", "com.example.domain.sampleorder.model", "SampleOrder",
+                            "import org.springframework.stereotype.Service; public class SampleOrder {}")
+
+            errors = validate_generated_project(project, minimal_manifest(), self.replacements())
+
+            self.assertTrue(any("forbidden import" in error for error in errors))
+
+    def test_rejects_forbidden_application_import(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp)
+            self.write_java(project, "application", "com.example.application.sampleorder.service", "SampleOrderAppService",
+                            "import com.example.infra.sampleorder.adapter.SampleOrderPersistenceAdapter; public interface SampleOrderAppService {}")
+
+            errors = validate_generated_project(project, minimal_manifest(), self.replacements())
+
+            self.assertTrue(any("forbidden import" in error for error in errors))
+
+    def test_rejects_trigger_to_infra_import(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp)
+            self.write_java(project, "trigger", "com.example.trigger.http.sampleorder", "SampleOrderController",
+                            "import com.example.infra.sampleorder.adapter.SampleOrderPersistenceAdapter; public class SampleOrderController {}")
+
+            errors = validate_generated_project(project, minimal_manifest(), self.replacements())
+
+            self.assertTrue(any("forbidden import" in error for error in errors))
+
+    def test_rejects_misplaced_role_suffix(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp)
+            self.write_java(project, "infra", "com.example.infra.sampleorder.adapter", "SampleOrderDO")
+
+            errors = validate_generated_project(project, minimal_manifest(), self.replacements())
+
+            self.assertTrue(any("misplaced suffix" in error for error in errors))
+
+    def test_rejects_java_record_declaration(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp)
+            self.write_java(project, "domain", "com.example.domain.sampleorder.model", "SampleOrderId",
+                            "public record SampleOrderId(String value) {}")
+
+            errors = validate_generated_project(project, minimal_manifest(), self.replacements())
+
+            self.assertTrue(any("record declaration" in error for error in errors))
+
+    def test_rejects_mapstruct_converter_without_static_instance_or_error_policy(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp)
+            self.write_java(project, "application", "com.example.application.sampleorder.mapping", "SampleOrderConverter",
+                            "import org.mapstruct.Mapper; @Mapper public interface SampleOrderConverter {}")
+
+            errors = validate_generated_project(project, minimal_manifest(), self.replacements())
+
+            self.assertTrue(any("MapStruct contract" in error for error in errors))
+
+    def test_rejects_wrong_internal_module_dependency(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp)
+            dependencies = dict(minimal_manifest()["module_dependencies"])
+            dependencies["trigger"] = ["api", "application", "infra"]
+            self.write_reactor(project, dependencies)
+
+            errors = validate_generated_project(project, minimal_manifest(), self.replacements())
+
+            self.assertTrue(any("module dependency" in error for error in errors))
+
     def test_real_template_uses_mapstruct_and_mybatis_xml(self) -> None:
         template = SKILL_ROOT / "assets" / "project-template"
         controller = (template / "__DDD_PROJECT_NAME__-trigger" / "src" / "main" / "java"
@@ -148,7 +307,7 @@ class ManifestValidationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "manifest.json"
             path.write_text(json.dumps(minimal_manifest()), encoding="utf-8")
-            self.assertEqual("1.0.0", load_manifest(path)["template_version"])
+            self.assertEqual("2.0.0", load_manifest(path)["template_version"])
 
     def test_reports_missing_required_path(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

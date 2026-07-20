@@ -1,5 +1,5 @@
 {
-  "template_version": "1.0.0",
+  "template_version": "2.0.0",
   "placeholders": [
     "__DDD_PROJECT_NAME__",
     "__DDD_GROUP_ID__",
@@ -68,6 +68,33 @@
     "posix": [
       "./mvnw",
       "verify"
+    ]
+  },
+  "module_dependencies": {
+    "api": [],
+    "domain": [],
+    "application": ["domain"],
+    "infra": ["domain"],
+    "trigger": ["api", "application"],
+    "starter": ["trigger", "infra"]
+  },
+  "java_rules": {
+    "forbidden_imports": {
+      "domain": ["org.springframework.", "org.apache.dubbo.", "org.mybatis.", ".application.", ".infra.", ".trigger."],
+      "application": [".api.", ".facade.", ".infra.", ".trigger."],
+      "trigger": [".infra."]
+    },
+    "suffix_packages": {
+      "DO": ".infra.sampleorder.persistence.entity",
+      "Controller": ".trigger.http.sampleorder",
+      "Provider": ".trigger.rpc.sampleorder",
+      "PersistenceAdapter": ".infra.sampleorder.adapter",
+      "BeanConfiguration": ".bean"
+    },
+    "forbid_records": true,
+    "mapstruct_required_fragments": [
+      "Mappers.getMapper(",
+      "unmappedTargetPolicy = ReportingPolicy.ERROR"
     ]
   }
 }
