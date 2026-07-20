@@ -49,6 +49,11 @@
                                         <exclude>org.springframework.data:*</exclude>
                                         <exclude>com.squareup.okhttp3:*</exclude>
                                         <exclude>org.apache.httpcomponents:*</exclude>
+                                        <exclude>__DDD_GROUP_ID__:__DDD_PROJECT_NAME__-api</exclude>
+                                        <exclude>__DDD_GROUP_ID__:__DDD_PROJECT_NAME__-application</exclude>
+                                        <exclude>__DDD_GROUP_ID__:__DDD_PROJECT_NAME__-infra</exclude>
+                                        <exclude>__DDD_GROUP_ID__:__DDD_PROJECT_NAME__-trigger</exclude>
+                                        <exclude>__DDD_GROUP_ID__:__DDD_PROJECT_NAME__-starter</exclude>
                                     </excludes>
                                     <searchTransitive>true</searchTransitive>
                                 </bannedDependencies>

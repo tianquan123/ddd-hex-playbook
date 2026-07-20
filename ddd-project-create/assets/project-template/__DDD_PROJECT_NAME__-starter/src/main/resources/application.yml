@@ -2,12 +2,25 @@ spring:
   application:
     name: __DDD_PROJECT_NAME__
   datasource:
-    url: "jdbc:mysql://xxxxx:3306/xxxxx?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai"
-    username: xxxxx
-    password: xxxxx
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_URL:jdbc:h2:mem:sample-order;MODE=MySQL;DB_CLOSE_DELAY=-1;DATABASE_TO_LOWER=TRUE}
+    username: ${DB_USERNAME:sa}
+    password: ${DB_PASSWORD:}
+    driver-class-name: ${DB_DRIVER:org.h2.Driver}
+  sql:
+    init:
+      mode: always
 
 mybatis:
   mapper-locations: classpath*:mapper/**/*.xml
   configuration:
     map-underscore-to-camel-case: true
+
+dubbo:
+  application:
+    name: __DDD_PROJECT_NAME__
+    qos-enable: false
+  registry:
+    address: ${DUBBO_REGISTRY_ADDRESS:N/A}
+  protocol:
+    name: dubbo
+    port: ${DUBBO_PROTOCOL_PORT:-1}

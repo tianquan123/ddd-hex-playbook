@@ -47,7 +47,7 @@ The generator uses these exit codes:
 | `5` | Generated-project validation failure | Report the failed invariant and preserve the log |
 | `6` | Maven verification failure | Report the failed command and point to `.ddd-project-create.log` in the generated project |
 
-On success, include the absolute target path, the six generated modules, and confirmation that Maven `verify` passed. Suggest removing or replacing the sample business slice after the team models the real domain.
+On success, include the absolute target path, the six generated modules, and confirmation that Maven `verify` passed. The generated `sampleorder` slice is runnable with its default H2 datasource. Suggest replacing that slice after the team models the real domain.
 
 On failure, include the exit code, concise cause, and log path when present. Do not hide Maven output or retry with altered project contents.
 
@@ -57,7 +57,16 @@ Read [references/template-contract.md](references/template-contract.md) when cha
 
 Generated Java source must use Lombok-backed classes instead of Java Record declarations. HTTP request DTOs must carry Bean Validation constraints and be validated at the Trigger boundary.
 
-Keep the bundled sample slice's technology choices intact: convert HTTP requests to application commands with static MapStruct, and persist sample orders to MySQL through MyBatis XML. Datasource values in the generated Starter YAML are deliberate `xxxxx` placeholders; replace them with real connection details before starting the application.
+Keep the bundled sample slice's naming and placement conventions intact:
+
+- API contracts live in `api`, `facade`, and `model.<business>.{request,response}`.
+- Domain types live in `domain.<business>.{model,repository,exception}` and use the business name (`SampleOrder`), not an `Aggregate` suffix.
+- Application interfaces live in `application.<business>.service`; implementations live in its `impl` child package. Commands, queries, views, ports, and converters each have their own sibling package.
+- Persistence uses `*DO`, `*Mapper`, `*PersistenceAdapter`, and a static MapStruct converter under `infra.<business>`; SQL stays in `mapper/<business>/*.xml`.
+- HTTP controllers and Dubbo providers live under `trigger.{http,rpc}.<business>` and own their protocol converters.
+- Only Starter composes application services and outbound adapters, in `bean/*BeanConfiguration`; those classes must not gain component stereotypes.
+
+Keep static MapStruct conversion and MyBatis XML persistence. The default H2 configuration is an immediately runnable local example; production datasource values must be supplied through the documented environment variables.
 
 ## Common mistakes
 
