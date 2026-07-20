@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="__DDD_BASE_PACKAGE__.infra.sampleorder.persistence.mapper.SampleOrderMapper">
+
+    <resultMap id="SampleOrderResult" type="__DDD_BASE_PACKAGE__.infra.sampleorder.persistence.entity.SampleOrderDO">
+        <id property="id" column="id"/>
+        <result property="productCode" column="product_code"/>
+        <result property="quantity" column="quantity"/>
+        <result property="status" column="status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="columns">
+        id, product_code, quantity, status, create_time, update_time
+    </sql>
+
+    <insert id="insert">
+        INSERT INTO sample_order (id, product_code, quantity, status, create_time, update_time)
+        VALUES (#{id}, #{productCode}, #{quantity}, #{status}, #{createTime}, #{updateTime})
+    </insert>
+
+    <update id="update">
+        UPDATE sample_order
+        SET product_code = #{productCode},
+            quantity = #{quantity},
+            status = #{status},
+            update_time = #{updateTime}
+        WHERE id = #{id}
+    </update>
+
+    <select id="selectById" resultMap="SampleOrderResult">
+        SELECT <include refid="columns"/>
+        FROM sample_order
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectOne" resultMap="SampleOrderResult">
+        SELECT <include refid="columns"/>
+        FROM sample_order
+        WHERE id = #{id}
+    </select>
+
+    <select id="count" resultType="long">
+        SELECT COUNT(*)
+        FROM sample_order
+        <where>
+            <if test="status != null">
+                status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectPage" resultMap="SampleOrderResult">
+        SELECT <include refid="columns"/>
+        FROM sample_order
+        <where>
+            <if test="status != null">
+                status = #{status}
+            </if>
+        </where>
+        ORDER BY create_time DESC, id ASC
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+</mapper>
