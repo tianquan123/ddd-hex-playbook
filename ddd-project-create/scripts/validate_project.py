@@ -169,8 +169,13 @@ def _validate_java_source(
     project_name = replacements["__DDD_PROJECT_NAME__"]
     module = _module_name(relative, project_name)
     forbidden = manifest["java_rules"]["forbidden_imports"].get(module, [])
+    base_package = replacements["__DDD_BASE_PACKAGE__"]
     for imported in IMPORT_PATTERN.findall(text):
-        if any(token in imported for token in forbidden):
+        if any(
+            imported.startswith(base_package + token) if token.startswith(".")
+            else imported.startswith(token)
+            for token in forbidden
+        ):
             errors.append(f"forbidden import in {relative_text}: {imported}")
     package_name = declared or ""
     for suffix, required_package in manifest["java_rules"]["suffix_packages"].items():

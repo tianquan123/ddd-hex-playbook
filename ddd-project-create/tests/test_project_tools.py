@@ -212,6 +212,17 @@ class ManifestValidationTests(unittest.TestCase):
 
             self.assertTrue(any("forbidden import" in error for error in errors))
 
+    def test_allows_external_package_with_same_segment_as_internal_module(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp)
+            self.write_java(project, "application", "com.example.application.sampleorder.service",
+                            "SampleOrderAppServiceTest",
+                            "import org.junit.jupiter.api.Test; public class SampleOrderAppServiceTest {}")
+
+            errors = validate_generated_project(project, minimal_manifest(), self.replacements())
+
+            self.assertFalse(any("forbidden import" in error for error in errors))
+
     def test_rejects_trigger_to_infra_import(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             project = Path(tmp)
@@ -323,21 +334,34 @@ class ManifestValidationTests(unittest.TestCase):
     def test_real_template_uses_mapstruct_and_mybatis_xml(self) -> None:
         template = SKILL_ROOT / "assets" / "project-template"
         controller = (template / "__DDD_PROJECT_NAME__-trigger" / "src" / "main" / "java"
-                      / "__DDD_BASE_PACKAGE_PATH__" / "trigger" / "http"
+                      / "__DDD_BASE_PACKAGE_PATH__" / "trigger" / "http" / "sampleorder"
                       / "SampleOrderController.java").read_text(encoding="utf-8")
-        http_mapper = (template / "__DDD_PROJECT_NAME__-trigger" / "src" / "main" / "java"
-                       / "__DDD_BASE_PACKAGE_PATH__" / "trigger" / "http"
-                       / "SampleOrderHttpMapper.java").read_text(encoding="utf-8")
+        http_converter = (template / "__DDD_PROJECT_NAME__-trigger" / "src" / "main" / "java"
+                          / "__DDD_BASE_PACKAGE_PATH__" / "trigger" / "http" / "sampleorder"
+                          / "SampleOrderHttpConverter.java").read_text(encoding="utf-8")
         mapper_xml = (template / "__DDD_PROJECT_NAME__-infra" / "src" / "main" / "resources"
-                      / "mapper" / "SampleOrderMapper.xml").read_text(encoding="utf-8")
+                      / "mapper" / "sampleorder" / "SampleOrderMapper.xml").read_text(encoding="utf-8")
         yaml = (template / "__DDD_PROJECT_NAME__-starter" / "src" / "main" / "resources"
                 / "application.yml").read_text(encoding="utf-8")
 
-        self.assertIn("SampleOrderHttpMapper.INSTANCE.toCommand(request)", controller)
-        self.assertIn("Mappers.getMapper(SampleOrderHttpMapper.class)", http_mapper)
-        self.assertIn('<insert id="upsert"', mapper_xml)
-        self.assertIn("jdbc:mysql://xxxxx:3306/xxxxx", yaml)
+        self.assertIn("SampleOrderHttpConverter.INSTANCE.toCommand(request)", controller)
+        self.assertIn("Mappers.getMapper(SampleOrderHttpConverter.class)", http_converter)
+        self.assertIn('unmappedTargetPolicy = ReportingPolicy.ERROR', http_converter)
+        self.assertIn('<insert id="insert"', mapper_xml)
+        self.assertIn("jdbc:h2:mem:sample-order", yaml)
         self.assertEqual([], list(template.rglob("InMemorySampleOrderRepository.java")))
+
+    def test_real_template_uses_business_slice_packages_and_names(self) -> None:
+        template = SKILL_ROOT / "assets" / "project-template"
+        java_sources = list(template.rglob("*.java"))
+        source_text = "\n".join(path.read_text(encoding="utf-8") for path in java_sources)
+
+        self.assertNotIn(".sample.", source_text)
+        self.assertNotRegex(source_text, r"\b[A-Za-z0-9_]*Aggregate\b")
+        self.assertTrue(any("/domain/sampleorder/model/SampleOrder.java" in path.as_posix()
+                            for path in java_sources))
+        self.assertTrue(any("/bean/SampleOrderBeanConfiguration.java" in path.as_posix()
+                            for path in java_sources))
 
     def test_template_java_sources_do_not_declare_records(self) -> None:
         template = SKILL_ROOT / "assets" / "project-template"
@@ -542,7 +566,9 @@ class SkillContractTests(unittest.TestCase):
     def test_documents_sample_mapping_and_persistence_choices(self) -> None:
         self.assertIn("static MapStruct", self.text)
         self.assertIn("MyBatis XML", self.text)
-        self.assertIn("`xxxxx`", self.text)
+        self.assertIn("default H2", self.text)
+        self.assertIn("`bean/*BeanConfiguration`", self.text)
+        self.assertIn("not an `Aggregate` suffix", self.text)
 
     def test_invokes_generator_and_explains_exit_codes(self) -> None:
         self.assertIn("python scripts/create_project.py", self.text)

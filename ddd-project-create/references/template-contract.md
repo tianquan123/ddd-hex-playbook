@@ -17,7 +17,25 @@ The generated Maven reactor contains exactly these modules in dependency order:
 
 Generated Java source must not declare Java Record. Use Lombok-backed classes for DTOs, commands, and value objects; preserve domain invariants in explicit constructors when generated Lombok constructors are insufficient.
 
-The sample HTTP boundary must use static MapStruct to convert request DTOs into application commands. The sample Infra adapter must persist through a MyBatis mapper interface and XML SQL, never an in-memory map. Keep datasource and MyBatis settings in Starter YAML; its `xxxxx` connection values are intentional placeholders and must not be treated as working credentials.
+The sample HTTP and RPC boundaries use static MapStruct converters. The Infra adapter persists through a MyBatis mapper interface and XML SQL, never an in-memory map. Starter owns datasource, MyBatis, Dubbo, mapper scanning, and explicit bean composition. Its default H2 configuration must start locally without private infrastructure; production datasource and registry values are environment overrides.
+
+## Naming and placement
+
+Use `sampleorder` only as the removable example business slice. A real bounded context replaces it with its ubiquitous-language name.
+
+| Concern | Package | Naming |
+| --- | --- | --- |
+| HTTP contract | `api`, `model.<business>.request`, `model.<business>.response` | `*Api`, `*Request`, `*Response` |
+| RPC contract | `facade` | `*Facade` |
+| Domain | `domain.<business>.model` | business name, `*Id`, `*Status`; never `*Aggregate` |
+| Domain port | `domain.<business>.repository` | `*Repository` |
+| Use cases | `application.<business>.service` and `.service.impl` | `*AppService`, `*QueryService`, matching `*Impl` |
+| Application messages | `.command`, `.query`, `.model`, `.port`, `.mapping` | `*Command`, `*Criteria`, `*View`, `*Port`, `*Converter` |
+| Persistence | `infra.<business>.{adapter,mapping,persistence.entity,persistence.mapper}` | `*PersistenceAdapter`, `*DO`, `*Mapper`, `*PersistenceConverter` |
+| Inbound adapters | `trigger.http.<business>`, `trigger.rpc.<business>` | `*Controller`, `*Provider`, protocol-specific `*Converter` |
+| Composition | `bean` in Starter | `*BeanConfiguration` |
+
+API models must not enter Application or Domain. Domain objects and persistence DOs must not leave their owning boundaries. Trigger must not import Infra. Application implementation classes and persistence adapters remain plain Java classes; Starter creates them explicitly with `@Bean` methods.
 
 ## Placeholders
 
