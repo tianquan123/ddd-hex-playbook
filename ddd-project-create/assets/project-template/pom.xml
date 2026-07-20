@@ -21,6 +21,9 @@
         <maven.compiler.release>21</maven.compiler.release>
         <maven-enforcer-plugin.version>3.5.0</maven-enforcer-plugin.version>
         <mapstruct.version>1.6.3</mapstruct.version>
+        <mybatis-spring-boot.version>3.0.4</mybatis-spring-boot.version>
+        <dubbo.version>3.3.0</dubbo.version>
+        <h2.version>2.2.224</h2.version>
     </properties>
 
     <modules>
@@ -31,4 +34,31 @@
         <module>__DDD_PROJECT_NAME__-trigger</module>
         <module>__DDD_PROJECT_NAME__-starter</module>
     </modules>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <release>${maven.compiler.release}</release>
+                    <parameters>true</parameters>
+                    <encoding>UTF-8</encoding>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>${mapstruct.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

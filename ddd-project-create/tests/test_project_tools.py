@@ -6,6 +6,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 
@@ -260,6 +261,64 @@ class ManifestValidationTests(unittest.TestCase):
             errors = validate_generated_project(project, minimal_manifest(), self.replacements())
 
             self.assertTrue(any("module dependency" in error for error in errors))
+
+    def real_internal_dependencies(self, module: str) -> list[str]:
+        template = SKILL_ROOT / "assets" / "project-template"
+        pom = template / f"__DDD_PROJECT_NAME__-{module}" / "pom.xml"
+        root = ET.parse(pom).getroot()
+        namespace = {"m": "http://maven.apache.org/POM/4.0.0"}
+        prefix = "__DDD_PROJECT_NAME__-"
+        result: list[str] = []
+        for dependency in root.findall("m:dependencies/m:dependency", namespace):
+            artifact = dependency.findtext("m:artifactId", default="", namespaces=namespace)
+            if artifact.startswith(prefix):
+                result.append(artifact[len(prefix):])
+        return result
+
+    def test_real_template_declares_exact_internal_module_graph(self) -> None:
+        expected = minimal_manifest()["module_dependencies"]
+        actual = {module: self.real_internal_dependencies(module) for module in expected}
+        self.assertEqual(expected, actual)
+
+    def test_real_template_pins_approved_public_dependency_versions(self) -> None:
+        pom = (SKILL_ROOT / "assets" / "project-template" / "pom.xml").read_text(encoding="utf-8")
+        for fragment in (
+            "<java.version>21</java.version>",
+            "<mapstruct.version>1.6.3</mapstruct.version>",
+            "<mybatis-spring-boot.version>3.0.4</mybatis-spring-boot.version>",
+            "<dubbo.version>3.3.0</dubbo.version>",
+            "<h2.version>2.2.224</h2.version>",
+        ):
+            with self.subTest(fragment=fragment):
+                self.assertIn(fragment, pom)
+
+    def test_dubbo_version_does_not_override_spring_boot_dependency_management(self) -> None:
+        template = SKILL_ROOT / "assets" / "project-template"
+        root_pom = (template / "pom.xml").read_text(encoding="utf-8")
+        trigger_pom = (template / "__DDD_PROJECT_NAME__-trigger" / "pom.xml").read_text(encoding="utf-8")
+
+        self.assertNotIn("<artifactId>dubbo-bom</artifactId>", root_pom)
+        self.assertRegex(
+            trigger_pom,
+            r"<artifactId>dubbo-spring-boot-starter</artifactId>\s*<version>\$\{dubbo\.version\}</version>",
+        )
+
+    def test_domain_pom_enforces_framework_free_boundary(self) -> None:
+        pom = (SKILL_ROOT / "assets" / "project-template" / "__DDD_PROJECT_NAME__-domain"
+               / "pom.xml").read_text(encoding="utf-8")
+        for fragment in (
+            "org.springframework:*",
+            "org.springframework.boot:*",
+            "org.apache.dubbo:*",
+            "org.mybatis:*",
+            "__DDD_GROUP_ID__:__DDD_PROJECT_NAME__-api",
+            "__DDD_GROUP_ID__:__DDD_PROJECT_NAME__-application",
+            "__DDD_GROUP_ID__:__DDD_PROJECT_NAME__-infra",
+            "__DDD_GROUP_ID__:__DDD_PROJECT_NAME__-trigger",
+            "__DDD_GROUP_ID__:__DDD_PROJECT_NAME__-starter",
+        ):
+            with self.subTest(fragment=fragment):
+                self.assertIn(fragment, pom)
 
     def test_real_template_uses_mapstruct_and_mybatis_xml(self) -> None:
         template = SKILL_ROOT / "assets" / "project-template"

@@ -74,9 +74,9 @@
     "api": [],
     "domain": [],
     "application": ["domain"],
-    "infra": ["domain"],
+    "infra": ["application", "domain"],
     "trigger": ["api", "application"],
-    "starter": ["trigger", "infra"]
+    "starter": ["trigger", "infra", "application", "domain"]
   },
   "java_rules": {
     "forbidden_imports": {
